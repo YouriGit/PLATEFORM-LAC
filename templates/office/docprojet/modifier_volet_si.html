@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier suivi-indicateur</title>
+</head>
+<body>
+    <h4>Modifier suivi-des-indicateurs</h4>
+    <form style="display: flex;flex-direction: column" method="POST" action="{% url 'mod_modifier_indicateur' suivi_indicateur.id %}">
+        {% csrf_token %}
+        {{ form.as_table }}
+        <input type="submit" value="Enregistrer">
+    </form>
+</body>
+</html>

@@ -1,0 +1,105 @@
+{% extends 'base_dashboard_agent.html' %}
+{% load static %}
+{% block title %}{{ titre }} {{ user.prenom |capfirst }} {{ user.nom |upper}} {{ user.postnom | upper}}{% endblock %}
+{% block user-name %}
+    <div id="detail-agent" class="align-items-center">
+        <p class="p-0 mb-0 text-center">{{ user.prenom | capfirst }} {{ user.nom |upper }} {{ user.postnom | upper }}</p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Antenne : <strong>{{ user.antenne }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Département : <strong>{{ user.departement }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Fonction : <strong>{{ user.fonction }}</strong></p>
+    </div>
+{% endblock %}
+{% block user_profil %}
+    {% if user.photo %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/{{ user.photo }}');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% else %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/photos/no.png');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block compte_btn_groupe %}
+        <div class="text-center w-100 d-md-flex flex-row">
+            <a type="button" href="{% url 'profil_agent' user.id %}" class="btn btn-sm btn-primary">
+                <span class="bi-pen"> Mon compte</span>
+            </a>
+            <a type="button" class="btn btn-sm  mx-3 btn-danger small" href="{% url 'module_deconnexion' %}"><span class="bi-lock"> Desconnecter</span></a>
+        </div>
+  </div>
+{% endblock %}
+{% block section_title %}
+    {% if messages %}
+        <div id="msg-toast" class="text-center fw-bold mb-2">
+            <div class="toast fade show w-100" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <strong class="me-auto bi-envelope h4"></strong>
+                <small class="text-muted">{{ date.today }}</small>
+              </div>
+              <div class="toast-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <p class="text-danger h5">
+                                {{ message }}
+                                <strong></strong>
+                            </p>
+                        {% endif %}
+                        {% if message.tags == 'success' %}
+                            <p class="text-success h5">{{ message }}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+              </div>
+        </div>
+    </div>
+    {% endif %}
+    <span class="text-primary bi-newspaper">
+         Ajouter des indicateurs
+    </span>
+{% endblock %}
+{% block central_section %}
+    <header class="w-100 d-flex flex-column">
+        <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2">IDENTIFICATION PROGRAMME</h5>
+        <div class="border-bottom"><span class="bi-newspaper text-muted"> Titre du programme : </span> <strong>  {{ projet.titre }}</strong></div>
+        <div class="border-bottom"><span class="bi-code text-muted"> Code du programme  : </span> <strong>  {{ projet.code_project }}</strong></div>
+        <div class="border-bottom"><span class="bi-coin text-muted"> Programme financé par  : </span> <strong>  {{ projet.finance_par }}</strong></div>
+        <div class="border-bottom"><span class="bi-alarm text-muted"> Période d'exécution : </span> <strong>du  {{ projet.date_debut }} au {{ projet.date_fin }} soit</strong><strong class="small fw-normal p-1 text-primary text-light"> {{ projet.duree }}</strong>
+        </div>
+        <div class="border-bottom"><span class="bi-list-columns text-muted"> Plan d'actions LACasbl de développement (PAPLD):</span>
+            <div style="text-align: justify">
+                {{ projet.plan_action }}
+            </div>
+        </div>
+        <div class="border-bottom">
+            <span class="bi-person-rolodex text-muted"> Programme sollicité : </span> <strong>  {{ projet.programme_solicite }}</strong>
+        </div>
+    </header><br>
+    <div style="border: 1px solid teal; padding: 9px; border-radius: 9px">
+        <form method="post" action='{% url 'mod_ajouter_suivi_indicateur' ap.id %}'>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Insérer" class="btn btn-primary w-100">
+        </form>
+    </div>
+    <style>
+        #id_activite_principale{
+            display: none;
+        }
+        label{
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}

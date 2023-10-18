@@ -1,0 +1,297 @@
+{% extends 'base_dashboard_agent.html' %}
+{% load static %}
+{% block title %}{{ titre }} {{ user.prenom |capfirst }} {{ user.nom |upper}} {{ user.postnom | upper}}{% endblock %}
+{% block user-name %}
+    <div id="detail-agent" class="align-items-center">
+        <p class="p-0 mb-0 text-center">{{ user.prenom | capfirst }} {{ user.nom |upper }} {{ user.postnom | upper }}</p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Antenne : <strong>{{ user.antenne }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Département : <strong>{{ user.departement }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Fonction : <strong>{{ user.fonction }}</strong></p>
+    </div>
+{% endblock %}
+{% block user_profil %}
+    {% if user.photo %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/{{ user.photo }}');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% else %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/photos/no.png');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block compte_btn_groupe %}
+        <div class="text-center w-100 d-md-flex flex-row">
+            <a type="button" href="{% url 'profil_agent' user.id %}" class="btn btn-sm btn-primary">
+                <span class="bi-pen"> Mon compte</span>
+            </a>
+            <a type="button" class="btn btn-sm  mx-3 btn-danger small" href="{% url 'module_deconnexion' %}"><span class="bi-lock"> Desconnecter</span></a>
+        </div>
+
+  </div>
+{% endblock %}
+{% block section_title %}<span class="text-primary bi-currency-dollar">Budget global du projet</span>{% endblock %}
+{% block central_section %}
+    <script>
+        $(document).ready(function(){
+            $('#selectprojet').select2();
+        })
+    </script>
+    <a href="{% url 'exporter_doc_budget' projet.id %}" class="btn mx-md-2 btn btn-primary text-light" type="button">Exporter le document</a><br><br>
+    <header class="w-100 d-flex flex-column">
+        <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2">IDENTIFICATION PROGRAMME</h5>
+        <div class="border-bottom"><span class="bi-newspaper text-muted"> Titre du programme : </span> <strong>  {{ projet.titre }}</strong></div>
+        <div class="border-bottom"><span class="bi-code text-muted"> Code du programme  : </span> <strong>  {{ projet.code_project }}</strong></div>
+        <div class="border-bottom"><span class="bi-coin text-muted"> Programme financé par  : </span> <strong>  {{ projet.finance_par }}</strong></div>
+        <div class="border-bottom"><span class="bi-alarm text-muted"> Période d'exécution : </span> <strong>du  {{ projet.date_debut }} au {{ projet.date_fin }} soit</strong><strong class="small fw-normal p-1 text-primary text-light"> {{ projet.duree }}</strong>
+        </div>
+        <div class="border-bottom"><span class="bi-list-columns text-muted"> Plan d'actions LACasbl de développement (PAPLD):</span>
+            <div style="text-align: justify">
+                {{ projet.plan_action }}
+            </div>
+        </div>
+        <div class="border-bottom">
+            <span class="bi-person-rolodex text-muted"> Programme sollicité : </span> <strong>  {{ projet.programme_solicite }}</strong>
+        </div>
+    </header><br>
+    <section style="margin:18px">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+                        <p style="color: red">{{ message }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </section>
+    <div id="div_message" class="container-fluid" style="display: none"><span style="color: red"><b>le montant des contributions des partenaires doit être égal au cout total</b></span></div>
+    <div style="padding: 4px" class="container-fluid">
+        <div style="display: grid; grid-template-columns: 30% 70%; border: 2px solid green; border-radius: 4px; padding: 6px">
+            <div class="container">
+                <form method="post"; style="display: flex;flex-direction: column; border: solid 1px blue; padding: 5px;" action="{% url 'mod_ajouter_budgetPlan' projet.id %}">
+                    {% csrf_token %}
+                    <label>Activité principale</label>
+                    <select id="selectprojet" name="activite_principale" required>
+                        <option selected disabled="true">--rechercher une activité--</option>
+                        {% for actp in activite_principale  %}
+                            {% if actp.volet.domaine.projet == projet %}
+                                <option value="{{ actp.id }}">{{ actp.activitePrincipale }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label>Numéro de ligne budgétaire</label>
+                    <input type="number" name="num_ligne_budgetaire" required><br>
+                    <input type="text" placeholder="désignation" name="designation" required><br>
+                    <input type="text" placeholder="spécification" name="specification" required><br>
+                    <input type="text" name="unite" placeholder="unité" required><br>
+                    <label>Quantité</label>
+                    <input type="number" name="quantite" value="0" id="id_quantite" required onchange="calculerSomme_contrib()">
+                    <label>Prix Unitaire</label>
+                    <input type="number" name="prix_unitaire" value="0" id="id_prix_unitaire" required onchange="calculerSomme_contrib()">
+                    <label>Fréquence</label>
+                    <input type="number" name="frequence" value="0" id="id_frequence" required onchange="calculerSomme_contrib()">
+                    <input id="id_total_1" style="display: none">
+                    {% for partenaire in l_partenaire %}
+                        <label>
+                            <input id="{{ partenaire.id }}" type="checkbox" name={{ partenaire.id }} value="{{ partenaire.partenaire }}" onchange="toggleInput(this)">
+                            {{ partenaire.partenaire }}
+                        </label>
+                        <div id="input{{ partenaire.id }}" style="display:none;"><label style="font-size: 8pt">contribution du partenaire</label>
+                            <input class="contrib" type="number" name=partenaire_{{ partenaire.partenaire }} placeholder="contribution" value="0" onchange="calculerSomme_contrib()">
+                        </div>
+                    {% endfor %}
+                    <br><input type="text" placeholder="Observations" name="observation" required>
+                    <input type="submit" value="Inserer" class="submit" id="id_btn_insert" required>
+                </form>
+            </div>
+            <aside style="border: solid 4px #ff9345;padding: 5px;">
+                <div class="table-responsive">
+                    <div class="container">
+                        <table class="table table-bordered table-sm">
+                            <tr class="bg-dark text-light">
+                                <th rowspan="2">Activité principale</th>
+                                <th rowspan="2">Numéro de Ligne</th>
+                                <th rowspan="2">Designation</th>
+                                <th rowspan="2">Specification</th>
+                                <th rowspan="2">Unites</th>
+                                <th rowspan="2">Quantite</th>
+                                <th rowspan="2">P.U</th>
+                                <th rowspan="2">Frequence</th>
+                                <th rowspan="2">P.T</th>
+                                <th colspan="{{ n_part }}" scope="col" style="background-color: teal">Contributions</th>
+                                <th rowspan="2">Observation</th>
+                                <th rowspan="2">Action</th>
+                            </tr>
+                            <tr class="bg-dark text-light">
+                                {% for partenaire in l_partenaire %}
+                                    <th scope="col">{{ partenaire.partenaire }}</th>
+                                {% endfor %}
+                             </tr>
+                        {% for ap in activite_principale %}
+                            {% if ap.volet.domaine.projet == projet %}
+                                <tr>
+                                    <td rowspan="1" id="row_span_{{ ap.id }}" style="background-color: darkgrey">{{ ap.activitePrincipale }}</td>
+                                    {% for budget in liste_budget %}
+                                        {% if budget.activite_principale == ap %}
+                                            <script>
+                                                var tdapstring = "row_span_{{ ap.id }}";
+                                                var tdrow_ap = document.getElementById(tdapstring);
+                                                var rowspan = parseInt(tdrow_ap.getAttribute('rowspan'));
+                                                tdrow_ap.setAttribute('rowspan', rowspan + 1);
+                                            </script>
+                                            <tr>
+                                                <td>{{ budget.numLigne }}</td>
+                                                <td>{{ budget.designation }}</td>
+                                                <td>{{ budget.specification }}</td>
+                                                <td>{{ budget.unite }}</td>
+                                                <td>{{ budget.quantite }}</td>
+                                                <td>{{ budget.prixUnit }}</td>
+                                                <td>{{ budget.frequence }}</td>
+                                                <td style="color: white;background-color: #48A733">
+                                                    <b>{{ budget.prixTot }}</b>
+                                                </td>
+                                                {% for partenaire in budget.partenaire %}
+                                                    <td>{{ partenaire.1 }}</td>
+                                                {% endfor %}
+                                                <td>{{ budget.observation }}</td>
+                                                <td>
+                                                    <a class="modif" href="{% url 'edit_budget' budget.id %}" title="Editer"></a>
+                                                    <a class="delete" href="{% url 'delete_budget' budget.id %}" title="Supprimer"></a>
+                                                </td></tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        <tr style="background-color: yellow">
+                            <td style="text-align: center; font-size: 13pt;">Total</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>{{ total_qte }}</td>
+                            <td>{{ total_pu }}</td>
+                            <td>{{ total_frequence }}</td>
+                            <td style="background-color: yellowgreen; color: white">{{ total_pt }}</td>
+                            {% for partenaire, contrib_total in contrib_totaux.items %}
+                                <td>{{ contrib_total }}</td>
+                            {% endfor %}
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </table>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+        th {
+            background-color: #1a4b0f;
+            color:white;
+        }
+        .container{
+                padding: 0;
+                max-height: 570px; /* Définir une hauteur maximale pour le conteneur */
+                overflow-y: auto; /* Ajouter un ascenseur horizontal uniquement lorsque nécessaire */
+        }
+        .delete{
+            color: red;
+            padding: 4px;
+            font-size: 7pt;
+        }
+        .modif:before {
+          content: "\270e";
+          font-size: 15px;
+        }
+        .delete:before {
+          content: "\2715";
+          font-size: 13px;
+          margin-right: 5px;
+        }
+        .submit{
+            background-color: #1078d9;
+            color: white;
+            padding: 4px;
+            font-size: 10pt;
+            margin-top: 5px;
+            border:none;
+        }
+        #div_message{
+            animation: apparaitre .45s ease-in-out;
+        }
+        @keyframes apparaitre {
+            0%{
+                opacity: 0;
+                {#scale: 0;#}
+            }
+            50%{
+                opacity: .5;
+                scale: 1.05;
+            }
+            100%{
+                opacity: 1;
+                scale: 1;
+            }
+        }
+    </style>
+    <script>
+        function toggleInput(checkbox) {
+          var inputId = "input" + checkbox.id;
+          var input = document.getElementById(inputId);
+          if (checkbox.checked) {
+            input.style.display = 'block';
+            var textInput = document.getElementsByName("text" + checkbox.value)[0];
+            textInput.focus();
+          } else {
+            input.style.display = 'none';
+            var textInput = document.getElementsByName("text" + checkbox.value)[0];
+            textInput.value = 0;
+          }
+        }
+
+        function calculerSomme_contrib() {
+            var inputs = document.querySelectorAll(".contrib");
+            var somme_contrib = 0;
+            for (var i = 0; i < inputs.length; i++) {
+                somme_contrib += parseFloat(inputs[i].value);
+            }
+
+            var resultat = 0;
+            var input1 = parseFloat(document.getElementById("id_quantite").value);
+            var input2 = parseFloat(document.getElementById("id_prix_unitaire").value);
+            var input3 = parseFloat(document.getElementById("id_frequence").value);
+            resultat = input1 * input2 * input3;
+
+            if (resultat == somme_contrib){
+                $('#id_btn_insert').css("background-color", "#1078d9");
+                $('#div_message').css("display", "none");
+                $('#id_btn_insert').disabled = false;
+            }else{
+                $('#id_btn_insert').css("background-color", "darkgrey");
+                $('#div_message').css("display", "unset");
+                $('#id_btn_insert').disabled = true;
+            }
+        }
+    </script>
+{% endblock %}

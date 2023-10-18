@@ -1,0 +1,54 @@
+{% extends 'base_dashboard_agent.html' %}
+{% load static %}
+{% block title %}{{ titre }} {{ user.prenom |capfirst }} {{ user.nom |upper}} {{ user.postnom | upper}}{% endblock %}
+{% block user-name %}
+    <div id="detail-agent" class="align-items-center">
+        <p class="p-0 mb-0 text-center">{{ user.prenom | capfirst }} {{ user.nom |upper }} {{ user.postnom | upper }}</p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Antenne : <strong>{{ user.antenne }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Département : <strong>{{ user.departement }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Fonction : <strong>{{ user.fonction }}</strong></p>
+    </div>
+{% endblock %}
+{% block user_profil %}
+    {% if user.photo %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/{{ user.photo }}');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% else %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/photos/no.png');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block compte_btn_groupe %}
+        <div class="text-center w-100 d-md-flex flex-row">
+            <a type="button" href="{% url 'profil_agent' user.id %}" class="btn btn-sm btn-primary">
+                <span class="bi-pen"> Mon compte</span>
+            </a>
+            <a type="button" class="btn btn-sm  mx-3 btn-danger small" href="{% url 'module_deconnexion' %}"><span class="bi-lock"> Desconnecter</span></a>
+        </div>
+
+  </div>
+{% endblock %}
+{% block section_title %}<span class="text-primary bi-newspaper">Nouveau projet</span>{% endblock %}
+{% block central_section %}
+    <div class="w-100 mb-3">
+        <form method="post" action="{% url 'doc_projet' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-sm btn w-100 btn-primary">
+                Enregistrer
+            </button>
+        </form>
+    </div>
+{% endblock %}

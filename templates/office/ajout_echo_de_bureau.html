@@ -1,0 +1,129 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}
+    {{ titre }} / {{ user.nom }} {{ user.postnom }}
+{% endblock %}
+
+
+{% block date %}
+    {{ date.date }}
+{% endblock %}
+{% block window_icon %}
+    <link rel="icon" href="{% static 'asserts/logo lac-asbl JPEG.jpg' %}">
+{% endblock %}
+{% block user_info %}
+    <span><b>{{ user.nom | upper}} {{ user.postnom | upper}}
+        {% if user.prenom %}
+            {{ user.prenom | capfirst}}
+        {% endif %}
+        </b>
+    </span>
+    <span style="font-size: 8.7pt;color: rgba(0,0,0,.4)">
+        {{ user.antenne }}
+    </span>
+    <span style="font-size: 8.7pt;color: rgba(0,0,0,.4)">
+        {{ user.departement }}
+    </span>
+    <span style="font-size: 8.7pt;color: rgba(0,0,0,.4)">
+        <u style="font-size: 9pt">{{ user.fonction }}</u>
+    </span>
+{% endblock %}
+{% block profil %}
+    <h1>{{ user.nom | upper }} {{ user.postnom | upper }}
+        {% if user.prenom %}
+            {{ user.prenom | capfirst}}
+        {% endif %}
+    </h1>
+    <li>
+        <a href="{% url 'mon_profil_agent' user.id %}">Réglages</a>
+    </li>
+    <li id="deconnexion">
+        <a href=" {% url 'module_deconnexion' %}">Deconnexion</a>
+    </li>
+{% endblock %}
+{% block header %}
+    <h1>
+    {{ entete }}
+    </h1>
+    <h2>
+        {{ titre }}
+    </h2>
+{% endblock %}
+{% block fonctionalite %}
+    <h1>OPTIONS D'ADMINISTRATION</h1>
+    <a href="#">
+        <li>
+            Gestion des agents
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Notes de service
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Rapports et statistiques
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Droits et permissions
+        </li>
+    </a>
+    <br><br><h1>PROFILE DE L'AGENT</h1>
+    <a href="#">
+        <li>
+            Mon dossier administratif
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Mon agenda
+        </li>
+    </a>
+    <br><br><h1>BUREAU DE L’AGENT</h1>
+    <a href="#">
+        <li>
+            Outils généraux LACasbl
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Mes outils standards de service
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Mes outils personnels
+        </li>
+    </a>
+    <br><br><h1>VALVE DE L’AGENT</h1>
+    <a href="#">
+        <li>
+            Notes de service
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Bulletin d’information hebdomadaire
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Rapports d’activités/d’évaluation de besoins
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Echo de nos bureaux LACasbl
+        </li>
+    </a>
+{% endblock %}
+{% block aside %}
+    <form method="POST" ENCTYPE="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <input type="submit" value="Enregistrer">
+    </form>
+{% endblock %}

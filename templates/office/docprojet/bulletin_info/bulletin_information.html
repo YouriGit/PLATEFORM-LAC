@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulletin d'information</title>
+</head>
+<body>
+    <h3>Bulletin d'information</h3>
+    <div style="display: flex;flex-direction: column;border: solid #1078d9 1px;padding: 5px">
+        <div style="border: solid #B3FFB4 1px;padding: 5px">
+        <div style="display: flex;flex-direction: column">
+            <span>Département : <b>{{ projet.departement }}</b></span>
+            <span>Programme/Service concerné :<b>{{ projet.progServiceConcerne }}</b></span>
+            <span>Nom du responsable: <b>{{ projet.nomDuResponsable }}</b></span>
+            <span>mail: <b>{{ projet.mail }}</b></span>
+        </div>
+            <table>
+                <tr>
+                    <th>ACTIVITES PREVUES</th>
+                    <th>RESULTATS ATTEINTS</th>
+                    <th>LIEUX  D'EXECUTION</th>
+                    <th>LECONS APPRISE DE L'ACTIVITE EXECUTEE</th>
+                    <th>STATUT ACTIVITE</th>
+                    <th>JUSTIFICATION  SI ACTIVITE REALISEE</th>
+                    <th>Mesures correctives</th>
+                    <th>PHOTOS DE REALISATION</th>
+                </tr>
+                {% for data in bulletin %}
+                    <tr>
+                        <td>{{ data.sous_activite}}</td>
+                        <td>{{ data.resultatAtteints}}</td>
+                        <td>{{ data.lieuxExecution}}</td>
+                        <td>{{ data.leconAprise}}</td>
+                        <td>{{ data.statut}}</td>
+                        <td>{{ data.justification}}</td>
+                        <td>{{ data.mesuresCorrectives}}</td>
+                        <td>
+                            <div style="display: flex;flex-wrap: wrap">
+                                {% for photo in photos %}
+                                    {% if photo.bulletin_info == data %}
+                                        <img class= 'photo' src="../../media/{{ photo.photoRealisation }}">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div style="display: grid;grid-template-columns: 30% 70%">
+            <form method="post" action = '{% url 'mod_ajouter_bulletin_info' projet.id %}' style="display: flex;flex-direction: column;
+            padding: 5px;border: solid 2px #D73F3C;margin:8px">
+                <h4>Bulletin d'information</h4>
+                {% csrf_token %}
+                {{ form_bulletin.as_table }}
+                <input type="submit" value="Enregistrer">
+            </form>
+            <form enctype="multipart/form-data" method="post" action="{% url "mod_ajouter_photo_realisation" projet.id %}" style="display: flex;flex-direction: column;
+            padding: 5px;border: solid 2px #D73F3C;margin:8px" >
+                <h4>Photo de realisation</h4>
+                {% csrf_token %}
+                {{ form_photo.as_table }}
+                <input type="submit" value="Enregistrer">
+            </form>
+        </div>
+
+    </div>
+<style>
+    table{
+      border-collapse: collapse;
+    }
+    th{
+        padding: 4px;
+        border: 1px solid;
+        background-color: #E1DCDC;
+        font-size: 9pt;
+    }
+    td{
+        border: 1px solid;
+        background-color: white;
+        font-size: 9pt;
+    }
+    .photo{
+        width: 60px;
+        border-radius: 5px;
+        margin: 2px;
+        border: solid 1px #E1DCDC;
+    }
+    .photo:hover{
+        animation: rotation 6s cubic-bezier(0, 1.03, 1, -0.38);
+    }
+    @keyframes rotation {
+        from{
+            transform: rotateZ(0deg) rotateY(10deg) rotateX(105deg) scale(1);
+        }
+        to{
+            transform: rotateZ(359deg) rotateY(340deg) rotateX(350deg) scale(10);
+        }
+    }
+    .modif{
+        background-color: #1078d9;
+        color: white;
+        padding: 4px;
+        text-decoration: none;
+        font-size: 7pt;
+    }
+    .delete{
+        background-color: rgba(147,17,27,0.8);
+        color: white;
+        padding: 4px;
+        text-decoration: none;
+        font-size: 7pt;
+    }
+</style>
+</body>
+</html>

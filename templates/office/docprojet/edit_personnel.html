@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier le personnel cle</title>
+</head>
+<body>
+    <form style="display: flex;flex-direction: column"
+    method="post" , action="{% url 'mod_modifier_liste_personnel' personnel.id %}"
+    >
+        {% csrf_token %}
+        {{ form.as_table }}
+        <input type="submit" value="Enregistrer">
+    </form>
+</body>
+</html>

@@ -1,0 +1,736 @@
+{% extends 'base_dashboard_agent.html' %}
+{% load static %}
+{% block title %}{{ titre }} {{ user.prenom |capfirst }} {{ user.nom |upper}} {{ user.postnom | upper}}{% endblock %}
+{% block user-name %}
+    <div id="detail-agent" class="align-items-center">
+        <p class="p-0 mb-0 text-center">{{ user.prenom | capfirst }} {{ user.nom |upper }} {{ user.postnom | upper }}</p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Antenne : <strong>{{ user.antenne }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Département : <strong>{{ user.departement }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Fonction : <strong>{{ user.fonction }}</strong></p>
+    </div>
+{% endblock %}
+{% block user_profil %}
+    {% if user.photo %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/{{ user.photo }}');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% else %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/photos/no.png');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block compte_btn_groupe %}
+        <div class="text-center w-100 d-md-flex flex-row">
+            <a type="button" href="{% url 'profil_agent' user.id %}" class="btn btn-sm btn-primary">
+                <span class="bi-pen"> Mon compte</span>
+            </a>
+            <a type="button" class="btn btn-sm  mx-3 btn-danger small" href="{% url 'module_deconnexion' %}"><span class="bi-lock"> Desconnecter</span></a>
+        </div>
+
+  </div>
+{% endblock %}
+{% block section_title %}<span class="bi-eye-fill text-primary"> Apecu du projet</span>{% endblock %}
+{% block central_section %}
+
+    <div class="container-fluid">
+        <header class="w-100 d-flex flex-column">
+            <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2">IDENTIFICATION PROGRAMME</h5>
+            <div class="border-bottom"><span class="bi-newspaper text-muted"> Titre du programme : </span> <strong>  {{ projet.titre }}</strong></div>
+            <div class="border-bottom"><span class="bi-code text-muted"> Code du programme  : </span> <strong>  {{ projet.code_project }}</strong></div>
+            <div class="border-bottom"><span class="bi-coin text-muted"> Programme financé par  : </span> <strong>  {{ projet.finance_par }}</strong></div>
+            <div class="border-bottom"><span class="bi-alarm text-muted"> Période d'exécution : </span> <strong>du  {{ projet.date_debut }} au {{ projet.date_fin }} soit</strong>
+            <strong class="small fw-normal p-1 text-primary text-light"> {{ projet.duree }}</strong>
+            </div>
+            <div class="border-bottom"><span class="bi-list-columns text-muted"> Plan d'actions LACasbl de développement (PAPLD):</span>
+                <div style="text-align: justify">
+                    {{ projet.plan_action }}
+                </div>
+            </div>
+            <div class="border-bottom">
+                <span class="bi-person-rolodex text-muted"> Programme sollicité : </span> <strong>  {{ projet.programme_solicite }}</strong>
+            </div>
+            <div class="container text-center">
+                <div class="btn-group mt-1" role="group" aria-label="Basic example">
+                      <a type="button" href='{% url "edit_doc_projet" projet.id %}' class="btn btn-sm btn-outline-secondary"><span class="bi-pencil"> Modifier...</span></a>
+                      <a type="button" href='{% url "configuration_doc_projet" projet.id %}' class="btn btn-sm btn-outline-secondary"><span class="bi-gear"> Configuration</span></a>
+                      <a type="button" href='{% url "exporter_doc_projet" projet.id %}' class="btn btn-sm btn-outline-primary"><span class="bi-arrow-left-circle"> Exporter le document</span></a>
+                      <a type="button" href='{% url "liste_projet" %}' class="btn btn-sm btn-outline-secondary"><span class="bi-list-task"> Retour vers liste des projets</span></a>
+                </div>
+            </div>
+        </header>
+        <section class="mt-2">
+            <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2">PARTENAIRE D'EXECUTION DU PROJET</h5>
+                <table class="table table-bordered table-striped table-sm mt-1">
+                <tr>
+                    <th class="bg-secondary text-light">ID</th>
+                    <th class="bg-secondary text-light">PARTENAIRE</th>
+                    <th class="bg-secondary text-light">ACTIONS</th>
+                </tr>
+                {% if l_partenaire %}
+                    {% for partenaire in l_partenaire %}
+                        <tr>
+                            <td class="fw-normal">{{ partenaire.id }}</td>
+                            <td class="fw-bold text-primary">{{ partenaire.partenaire }}</td>
+                            <td class="text-end">
+                                <a type="button" class="small btn btn-sm text-primary" href='{% url "edit_partenaire_execution" partenaire.id %}' title="Modifier le partenaire">
+                                    <span class="bi-pen"> Modifier</span>
+                                </a>
+                                <button type="button" data-bs-toggle="modal" data-bs-target='#modalpartenaire' class="small btn btn-sm text-primary">
+                                    <span class="bi-trash-fill" style="color: red;">Supprimer ce partenaire</span>
+                                </button>
+                                <div class="modal fade" id='modalpartenaire'>
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title h5 text-center " id="exampleModalCenteredScrollableTitle">
+                                                    Demande de confirmation
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="w-100 fw-normal" style="font-size: 18pt">
+                                                    <span>Voulez-vous vraiment supprimer ce partenaire ?</span>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a type="button" class="btn btn-danger btn-sm" href='{% url "delete_partenaire_execution" partenaire.id %}' title="Supprimer ce partenaire" style="border: none">
+                                                    Oui je le veux
+                                                </a>
+                                                <button class="btn btn-danger btn-sm" style="background-color: #1078d9; border: none" type="button" data-bs-dismiss="modal">Fermer</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td>-</td>
+                        <td>Aucun partenaire</td>
+                    </tr>
+                {% endif %}
+            </table>
+        <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2">LOCALISATION DU PROJET</h5>
+            <div class="table-responsive mt-1 border-bottom pb-2">
+                <div class="table">
+                    <table class="table table-bordered table-sm">
+                    <tr class="bg-secondary text-light text-light">
+                        <th >Pays</th>
+                        <th >Provinces</th>
+                        <th >Territoire/Villes</th>
+                        <th >Axes</th>
+                        <th >Nombre des béneficiaires</th>
+                    </tr>
+                    {% for pay in pays %}
+                        {% if pay.projet == projet %}
+                            <tr>
+                                <td rowspan="1" id="row_span_pays_{{ pay.id }}">
+                                    <span style="margin-right: 15px">{{ pay.pays }}</span>
+                                    <a href='{% url "edit_pays_projet" pay.id %}' title="Editer"><span class="bi-hand-index"></span></a>
+                                </td>
+                                {% for province in provinces %}
+                                    {% if province.pays == pay %}
+                                        <script>
+                                            var tdpaystring = "row_span_pays_{{ pay.id }}";
+                                            var tdpay_span = document.getElementById(tdpaystring);
+                                            var rowspanpay = parseInt(tdpay_span.getAttribute('rowspan'));
+                                            tdpay_span.setAttribute('rowspan', rowspanpay + 1);
+                                        </script>
+                                        <tr>
+                                            <td rowspan="1" id="row_span_province_{{ province.id }}">
+                                                <span  style="margin-right: 15px">{{ province.province }}</span>
+                                                <a href='{% url "edit_province_projet" province.id projet.id %}'><span class="bi-hand-index"></span></a>
+                                            </td>
+                                        </tr>
+                                        {% for v_territoire in ville_territoires %}
+                                            {% if v_territoire.province == province %}
+                                                <script>
+                                                    var tdprovincestring = "row_span_province_{{ province.id }}";
+                                                    var tdprovince_span = document.getElementById(tdprovincestring);
+                                                    var rowspanprovince = parseInt(tdprovince_span.getAttribute('rowspan'));
+                                                    tdprovince_span.setAttribute('rowspan', rowspanprovince + 1);
+                                                    var tdpaystring = "row_span_pays_{{ pay.id }}";
+                                                    var tdpay_span = document.getElementById(tdpaystring);
+                                                    var rowspanpay = parseInt(tdpay_span.getAttribute('rowspan'));
+                                                    tdpay_span.setAttribute('rowspan', rowspanpay + 1);
+                                                </script>
+                                                <tr>
+                                                    <td rowspan="1" id="row_span_ville_{{ v_territoire.id }}">
+                                                        <span style="margin-right: 15px">{{ v_territoire.ville_territoire }}</span>
+                                                        <a href='{% url "edit_territoir_ville_projet" v_territoire.id projet.id %}'><span class="bi-hand-index"></span></a>
+                                                    </td>
+                                                    {% for axe in axes %}
+                                                        {% if axe.ville_territoire == v_territoire %}
+                                                            <script>
+                                                                var tdvillestring = "row_span_ville_{{ v_territoire.id }}";
+                                                                var tdville_span = document.getElementById(tdvillestring);
+                                                                var rowspanville = parseInt(tdville_span.getAttribute('rowspan'));
+                                                                tdville_span.setAttribute('rowspan', rowspanville + 1);
+                                                                var tdprovincestring = "row_span_province_{{ province.id }}";
+                                                                var tdprovince_span = document.getElementById(tdprovincestring);
+                                                                var rowspanprovince = parseInt(tdprovince_span.getAttribute('rowspan'));
+                                                                tdprovince_span.setAttribute('rowspan', rowspanprovince + 1);
+                                                                var tdpaystring = "row_span_pays_{{ pay.id }}";
+                                                                var tdpay_span = document.getElementById(tdpaystring);
+                                                                var rowspanpay = parseInt(tdpay_span.getAttribute('rowspan'));
+                                                                tdpay_span.setAttribute('rowspan', rowspanpay + 1);
+                                                            </script>
+                                                            <tr>
+                                                                <td>
+                                                                    <span style="margin-right: 15px">{{ axe.axe }}</span>
+                                                                    <a href='{% url "edit_axe_projet" axe.id projet.id %}' style="height: 3px; width: 3px"><span class="bi-hand-index"></span></a>
+                                                                </td>
+                                                                <td>{{ axe.nombre_beneficiares }}</td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+                </div>
+            </div>
+        <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2">BUREAU LAC D'EXECUTION</h5>
+            <div class="table-responsive mt-1 border-bottom pb-2">
+                <div class="affichage">
+                    <table class="table table-bordered table-sm">
+                        <tr class="bg-secondary text-light small">
+                            <th>COORDINATION NATIONALE(COONAL)</th>
+                            <th>COORINATION PROVINCIALE(COOPR)</th>
+                            <th>ANTENNE LACasbl POUR LA DEVOPPEMENT ET PROMOTION DE L’ENTREPRENEURIAT (ALDPE)</th>
+                        </tr>
+                        {% for coonal in coord_nat %}
+                            {% if coonal.projet == projet %}
+                                <tr>
+                                    <td rowspan="1" id="row_span_coonal_{{ coonal.id }}">
+                                        <span style="margin-right: 15px">{{ coonal.coordination_national }}</span>
+                                        <a href='{% url "edit_cn_projet" coonal.id %}' title="Editer"><span class="bi-hand-index"></span></a>
+                                    </td>
+                                    {% for coopr in coord_prov %}
+                                        {% if coopr.cordination_nationale == coonal %}
+                                            <script>
+                                                var tdcoonalstring = "row_span_coonal_{{ coonal.id }}";
+                                                var tdcoonal_span = document.getElementById(tdcoonalstring);
+                                                var rowspancoonal = parseInt(tdcoonal_span.getAttribute('rowspan'));
+                                                tdcoonal_span.setAttribute('rowspan', rowspancoonal + 1);
+                                            </script>
+                                            <tr>
+                                                <td rowspan="1" id="row_span_coopr_{{ coopr.id }}">
+                                                    <span style="margin-right: 15px">{{ coopr.coordination_provinciale }}</span>
+                                                    <a href='{% url "edit_cp_projet" coopr.id projet.id %}' title="Editer"><span class="bi-hand-index"></span></a>
+                                                </td>
+                                                {% for aldpe in antenne %}
+                                                    {% if aldpe.coordination_provinciale == coopr %}
+                                                        <script>
+                                                            var tdcooprstring = "row_span_coopr_{{ coonal.id }}";
+                                                            var tdcoopr_span = document.getElementById(tdcooprstring);
+                                                            var rowspancoopr = parseInt(tdcoopr_span.getAttribute('rowspan'));
+                                                            tdcoopr_span.setAttribute('rowspan', rowspancoopr + 1);
+                                                            var tdcoonalstring = "row_span_coonal_{{ coonal.id }}";
+                                                            var tdcoonal_span = document.getElementById(tdcoonalstring);
+                                                            var rowspancoonal = parseInt(tdcoonal_span.getAttribute('rowspan'));
+                                                            tdcoonal_span.setAttribute('rowspan', rowspancoonal + 1);
+                                                        </script>
+                                                        <tr>
+                                                            <td>
+                                                                <span style="margin-right: 15px">{{ aldpe.antenne_projet }}</span>
+                                                                <a class="modif" href='{% url "edit_antenne_projet" aldpe.id projet.id %}' title="Editer"><span class="bi-hand-index"></span></a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2">DESCRIPTION DU CONTEXTE ACTUALISÉ DU PROGRAMME</h5>
+            <div class="mt-1 border-bottom pb-2">{{ projet.contextActualiseProgramme }}</div>
+            <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2 mt-2">THÉORIE DE CHANGEMENT DE LA LIGUE ANTI CHÔMAGE</h5><br>
+            <div style="text-align: justify" class="border-bottom pb-2">
+                Si des nouveaux emplois sont créés dans la société et que l’accès y soit aisé pour tous;
+                Alors la pauvreté généralisée de ménages sera réduite à travers la résorption de taux de chômage de la
+                population active dans la perspective de garantir à chacun dans la société  son accès aux services
+                socioéconomiques  de qualité(éducation, soins de santé, alimentation, habitat ,…) et améliorer ainsi son
+                niveau de contribution au processus de développement et de sécurité de son propre milieu.
+            </div>
+            <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2 mt-2">DESCRIPTION DE L’IMPACT ATTENDU DU PROGRAMME</h5><br>
+            <div class="mt-0 border-bottom pb-2">{{ projet.descImpactAttenduProg }}</div>
+        </section>
+        <div class="mt-2">
+            <h5 class="h5 mb-0 p-1 text-center bg-dark text-light rounded-2 mt-2">TABLEAUX DE PLAN DE TRAVAIL : RÉSULTATS, STRATÉGIES  ,INDICATEURS ET ÉTUDES DE CAS</h5>
+            {% for domaine in domaines %}
+                <div class="container text-center" style="margin-bottom: 10px">
+                    <div class="btn-group mt-1" role="group" aria-label="Basic example">
+                        <a href='{% url 'modifier_domaine' domaine.id %}' class="btn btn-sm btn-outline-secondary">
+                            <span class="bi-pen" style="font-size: 16px">Modifier</span>
+                        </a>
+                        <a href='{% url 'ajouter_volet_domaine' domaine.id %}' class="btn btn-sm btn-outline-primary">
+                            <span class="bi-plus-circle-fill" style="font-size: 16px"> Ajouter un volet dans ce domaine</span>
+                        </a>
+                        <a type="button" data-bs-toggle="modal" data-bs-target='#modaldomaine{{ forloop.counter }}' class="btn btn-sm btn-outline-danger">
+                            <span class="bi-trash-fill">Supprimer ce domaine</span>
+                        </a>
+                        <div class="modal fade" id='modaldomaine{{ forloop.counter }}'>
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title h5 text-center " id="exampleModalCenteredScrollableTitle">
+                                            Demande de confirmation
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="w-100 fw-normal" style="font-size: 18pt">
+                                            <span>Voulez-vous vraiment supprimer ce domaine ?</span>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a type="button" class="btn btn-danger btn-sm" href='{% url 'mod_supprimer_domaine_resultat' domaine.id %}' title="Supprimer ce domaine" style="border: none">
+                                            Oui je le veux
+                                        </a>
+                                        <button class="btn btn-danger btn-sm" style="background-color: #1078d9; border: none" type="button" data-bs-dismiss="modal">Fermer</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-bottom">
+                    <span class="text-muted">&boxbox; Domaine des résultats :
+                        <b class="text-primary">{{ domaine.domaine.domaine }}</b>
+                    </span>
+                </div>
+                <div class="border-bottom">
+                    <span class="text-muted">&boxbox; Objectif  LACasbl de développement dans ce domaine :
+                        <b class="text-primary">{{ domaine.objectif_lac_de_dvpt_dans_ce_domaine }}</b>
+                    </span>
+                </div>
+                {% for volet in volets %}
+                    {% if volet.domaine == domaine %}
+                        <div class="border-bottom">
+                            <span class="text-muted">&boxbox; Volet :
+                                <b class="text-primary">{{ volet.volet.volet }}</b>
+                            </span>
+                        </div>
+                        <div class="border-bottom">
+                            <span class="text-muted">&boxbox; Objectif LACasbl  de développement auquel le programme contribue dans ce volet :
+                                <b class="text-primary">{{ volet.objectif_LAC }}</b>
+                            </span>
+                        </div>
+                        <div class="border-bottom">
+                            <span class="text-muted">&boxbox; Objectif SMART :
+                                <b class="text-primary">{{ volet.objectif_SMART }}</b>
+                            </span>
+                        </div>
+                        <div class="border-bottom">
+                            <span class="text-muted">&boxbox; Description :
+                                <b class="text-primary">{{ volet.description_des_effets }}</b>
+                            </span>
+                        </div>
+                        <div class="border-bottom">
+                            <span class="text-muted">&boxbox; Vue d'ensemble :
+                                <b class="text-primary">{{ volet.vue_d_ensemble }}</b>
+                            </span>
+                        </div>
+                        <div class="border-bottom">
+                            <span class="text-muted">&boxbox; Enum.Personnel :
+                                <b class="text-primary">{{ volet.enumererpersonnel }}</b>
+                            </span>
+                        </div>
+                        <div class="border-bottom">
+                            <span class="text-muted">&boxbox; Nombre de success :
+                                <b class="text-primary">{{ volet.nbre_succes }}</b>
+                            </span>
+                        </div>
+                        <br><div class="container text-center" style="margin-bottom: 10px">
+                            <span class="text-muted">&boxbox; Options :
+                                <a href='{% url 'edit_volet_projet' volet.id %}' type="button" style="text-decoration: none"><span class="bi-pen" style="font-size: 16px; margin-right: 5px"><b>Modifier ce volet</b></span></a>
+                                <a href='{% url 'ajouter_ap_volet' volet.id %}' type="button" style="text-decoration: none"><span class="bi-plus-circle-fill" style="font-size: 16px; margin-right: 5px"><b>Ajouter une activité principale dans ce volet</b></span></a>
+                                <a href='{% url 'ajouter_gestion_risque' volet.id  %}' style="text-decoration: none">
+                                    <span class="bi-plus-circle-fill" style="font-size: 16px; margin-right: 5px"> <b>Ajouter un risque</b></span>
+                                </a>
+                                <a type="button" data-bs-toggle="modal" data-bs-target='#modalvolet{{ forloop.counter }}'>
+                                    <span class="bi-trash-fill" style="color: orangered; margin-right: 5px"><b>Supprimer ce volet</b></span>
+                                </a>
+                            </span>
+                            <div class="modal fade" id='modalvolet{{ forloop.counter }}'>
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title h5 text-center " id="exampleModalCenteredScrollableTitle">
+                                                    Demande de confirmation
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="w-100 fw-normal" style="font-size: 18pt">
+                                                    <span>Voulez-vous vraiment supprimer ce volet ?</span>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a href='{% url 'mod_effacer_volet' volet.id %}' type="button" class="btn btn-danger btn-sm" title="Supprimer ce volet" style="border: none">
+                                                    Oui je le veux
+                                                </a>
+                                                <button class="btn btn-danger btn-sm" style="background-color: #1078d9; border: none" type="button" data-bs-dismiss="modal">Fermer</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="table-responsive">
+                            <div class="affichage_tn_domaine">
+                                <table class="table table-bordered table-sm">
+                                    <tr class="bg-dark text-light">
+                                        <th rowspan="2">N°</th>
+                                        <th rowspan="2">Activités principales</th>
+                                        <th rowspan="2">Responsable d’exécution</th>
+                                        <th colspan="5">Indicateurs  Objectivement vérifiable (réalisation ,d’effet,impact)</th>
+                                        <th colspan="12">Période d’exécution</th>
+                                    </tr>
+                                    <tr class="bg-dark text-light">
+                                        <th>Indicateurs standard de LAC asbl</th>
+                                        <th>Base line/GAP</th>
+                                        <th>Cible(ou N/A)</th>
+                                        <th>Source des données y compris l’outil utilisé</th>
+                                        <th>Fréquence de la collecte</th>
+                                        <th>J</th>
+                                        <th>F</th>
+                                        <th>M</th>
+                                        <th>A</th>
+                                        <th>M</th>
+                                        <th>J</th>
+                                        <th>J</th>
+                                        <th>A</th>
+                                        <th>S</th>
+                                        <th>O</th>
+                                        <th>N</th>
+                                        <th>D</th>
+                                    </tr>
+                                    {% for actp in activites_principales %}
+                                        {% if actp.volet == volet %}
+                                            <tr>
+                                                <td rowspan="1" id="span_row_num_{{ actp.id }}">{{ forloop.counter }}</td>
+                                                <td rowspan="1" id="span_row_actp_{{ actp.id }}">
+                                                    <span><a type="button" class="nav-link" href="{% url 'edit_activite_principale_projet' actp.id %}"><span class="bi-hand-index"></span></a></span>
+                                                    {{ actp.activitePrincipale }}
+                                                </td>
+                                                <td rowspan="1" id="span_row_responsable_{{ actp.id }}">{{ actp.responsable_execution }}</td>
+                                                {% for indic in suivi_indicateur %}
+                                                    {% if indic.activite_principale == actp %}
+                                                        <script>
+                                                            var tdnumstring = "span_row_num_{{ actp.id }}";
+                                                            var tdactpstring = "span_row_actp_{{ actp.id }}";
+                                                            var tdresponsablestring = "span_row_responsable_{{ actp.id }}";
+                                                            var tdrow_num = document.getElementById(tdnumstring);
+                                                            var tdrow_actp = document.getElementById(tdactpstring);
+                                                            var tdrow_responsable = document.getElementById(tdresponsablestring);
+                                                            var rowspan1 = parseInt(tdrow_num.getAttribute('rowspan'));
+                                                            var rowspan2 = parseInt(tdrow_actp.getAttribute('rowspan'));
+                                                            var rowspan3 = parseInt(tdrow_responsable.getAttribute('rowspan'));
+                                                            tdrow_num.setAttribute('rowspan', rowspan1 + 1);
+                                                            tdrow_actp.setAttribute('rowspan', rowspan2 + 1);
+                                                            tdrow_responsable.setAttribute('rowspan', rowspan3 + 1);
+                                                        </script>
+                                                        <tr>
+                                                            <td>
+                                                                <span><a type="button" class="nav-link" href="{% url 'edit_indicateur' indic.id %}"><span class="bi-hand-index"></span></a></span>
+                                                                {{ indic.indicateur_lac }}
+                                                            </td>
+                                                            <td>{{ indic.base_line_gab }}</td>
+                                                            <td>{{ indic.cible_NA }}</td>
+                                                            <td>{{ indic.source_outils }}</td>
+                                                            <td>{{ indic.frequence_de_collecte }}</td>
+                                                            <td id="janvier_{{ indic.id }}"></td>
+                                                            <td id="fevrier_{{ indic.id }}"></td>
+                                                            <td id="mars_{{ indic.id }}"></td>
+                                                            <td id="avril_{{ indic.id }}"></td>
+                                                            <td id="mai_{{ indic.id }}"></td>
+                                                            <td id="juin_{{ indic.id }}"></td>
+                                                            <td id="juillet_{{ indic.id }}"></td>
+                                                            <td id="aout_{{ indic.id }}"></td>
+                                                            <td id="septembre_{{ indic.id }}"></td>
+                                                            <td id="octobre_{{ indic.id }}"></td>
+                                                            <td id="novembre_{{ indic.id }}"></td>
+                                                            <td id="decembre_{{ indic.id }}"></td>
+                                                            {% for periode in indic.periode_execution %}
+                                                                {% if periode == "janvier" %}
+                                                                    <script>
+                                                                        var tdstring = "janvier_{{ indic.id }}"
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "février" %}
+                                                                    <script>
+                                                                        var tdstring = "fevrier_{{ indic.id }}"
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "mars" %}
+                                                                    <script>
+                                                                        var tdstring = "mars_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "avril" %}
+                                                                    <script>
+                                                                        var tdstring = "avril_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "mai" %}
+                                                                    <script>
+                                                                        var tdstring = "mai_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "juin" %}
+                                                                    <script>
+                                                                        var tdstring = "juin_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "juillet" %}
+                                                                    <script>
+                                                                        var tdstring = "juillet_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "aout" %}
+                                                                    <script>
+                                                                        var tdstring = "aout_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "septembre" %}
+                                                                    <script>
+                                                                        var tdstring = "septembre_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "octobre" %}
+                                                                    <script>
+                                                                        var tdstring = "octobre_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "novembre" %}
+                                                                    <script>
+                                                                        var tdstring = "novembre_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% elif periode == "décembre" %}
+                                                                    <script>
+                                                                        var tdstring = "decembre_{{ indic.id }}";
+                                                                        var tdrow = document.getElementById(tdstring);
+                                                                        tdrow.style.backgroundColor = 'lightseagreen';
+                                                                    </script>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <tr class="bg-dark text-light">
+                                        <th colspan="20">Gestion des risques</th>
+                                    </tr>
+                                    <tr class="bg-dark text-light">
+                                        <th colspan="5">Déscription du risque</th>
+                                        <th colspan="5">Mesure de mitigation</th>
+                                        <th colspan="5">Résponsable de prévention</th>
+                                        <th colspan="5">Actions</th>
+                                    </tr>
+                                    {% for risque in gestion_risques %}
+                                        {% if risque.volet == volet %}
+                                            <tr>
+                                                <td colspan="5">{{ risque.description }}</td>
+                                                <td colspan="5">{{ risque.mesure }}</td>
+                                                <td colspan="5">{{ risque.responsable }}</td>
+                                                <td colspan="5">
+                                                    <div class="text-center">
+                                                        <a title="modifier la ligne" type="button" class="btn btn-sm btn btn-primary" href="{% url 'edit_risque' risque.id %}">
+                                                            <span class="bi-pen"></span>
+                                                        </a>
+                                                        <a type="button" data-bs-toggle="modal" data-bs-target='#modalrisque{{ forloop.counter }}' class="btn btn-sm btn btn-danger">
+                                                            <span class="bi-trash"></span>
+                                                        </a>
+                                                        <div class="modal fade" id='modalrisque{{ forloop.counter }}'>
+                                                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title h5 text-center " id="exampleModalCenteredScrollableTitle">
+                                                                            Demande de confirmation
+                                                                        </h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <div class="w-100 fw-normal" style="font-size: 18pt">
+                                                                            <span>Voulez-vous vraiment supprimer ce risque ?</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <a href="{% url 'mod_delete_risque' risque.id %}" type="button" class="btn btn-danger btn-sm" title="Supprimer ce volet" style="border: none">
+                                                                            Oui je le veux
+                                                                        </a>
+                                                                        <button class="btn btn-danger btn-sm" style="background-color: #1078d9; border: none" type="button" data-bs-dismiss="modal">Fermer</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+{#    <style>#}
+{#        .domaine{#}
+{#            padding: 5px;#}
+{#            background-color: #1078d9;#}
+{#            color: white;#}
+{#        }#}
+{#        .volet{#}
+{#            margin-left: 20px;#}
+{#            padding: 5px;#}
+{#            color: #16376e;#}
+{#            /*background-color:rgba(16,120,217,0.19);*/#}
+{#            margin-bottom: 2px;#}
+{#            border: solid 1px;#}
+{#            display: flex;#}
+{#            flex-direction: column;#}
+{#        }#}
+{#        .ap{#}
+{#            padding: 5px;#}
+{#            margin: 10px;#}
+{#            background-color: #515151;#}
+{#            color: white;#}
+{#            border-radius: 5px;#}
+{##}
+{#        }#}
+{#        .obj-glob{#}
+{#            margin-left: 40px;#}
+{#            padding: 5px;#}
+{#            border: solid 1px;#}
+{#            margin: 5px;#}
+{#            background:linear-gradient(35deg,rgba(76,88,211,.35),rgba(200,15,11,.23));#}
+{#            box-shadow: 5px 2px 4px rgba(0,0,0,.23);#}
+{#            border-radius: 4px;#}
+{#        }#}
+        {#.modif{#}
+        {#    padding: 3px;#}
+        {#    font-size: 9pt;#}
+        {#    border-radius: 5px;#}
+        {#    background-color: #1078d9;#}
+        {#    color: #ffffff;#}
+        {#    text-decoration: none;#}
+        {#    margin-left: 10px;#}
+{##}
+{#        .modif:before {#}
+{#          content: "\270e";#}
+{#          font-size: 15px;#}
+{#        }#}
+{#        #localisation{#}
+{#            display: flex;#}
+{#            flex-direction: column;#}
+{#        }#}
+{#        #localisation .pays{#}
+{#            background-color: lightskyblue;#}
+{#            color: black;#}
+{#            padding: 2px;#}
+{#        }#}
+{#        #localisation .province{#}
+{#            background-color: khaki;#}
+{#            margin-left: 20px;#}
+{#            padding: 2px;#}
+{#            border-left: solid 2px saddlebrown;#}
+{#        }#}
+{#        .affichage{#}
+{#            max-width: 100%; /* Définir une largeur maximale pour le conteneur */#}
+{#            overflow-x: auto; /* Ajouter un ascenseur vertical uniquement lorsque nécessaire */#}
+{#            max-height: 200px; /* Définir une hauteur maximale pour le conteneur */#}
+{#            overflow-y: auto; /* Ajouter un ascenseur vertical uniquement lorsque nécessaire */#}
+{#        }#}
+{#        .affichage_tn_domaine{#}
+{#            max-width: 100%; /* Définir une largeur maximale pour le conteneur */#}
+{#            overflow-x: auto; /* Ajouter un ascenseur vertical uniquement lorsque nécessaire */#}
+{#            max-height: 500px; /* Définir une hauteur maximale pour le conteneur */#}
+{#            overflow-y: auto; /* Ajouter un ascenseur vertical uniquement lorsque nécessaire */#}
+{#        }#}
+{#        #localisation .ville{#}
+{#            background-color: #9cc194;#}
+{#            border-left: solid 2px #1a4b0f;#}
+{#            margin-left: 40px;#}
+{#            padding: 2px;#}
+{#        }#}
+{#        #localisation .axe{#}
+{#            color: #494949;#}
+{#            margin-left: 60px;#}
+{#            padding: 2px;#}
+{#        }#}
+{#        .indicateur_lac{#}
+{#            margin-left: 20px;#}
+{#        }#}
+{#        .delete{#}
+{#            color: red;#}
+{#            border: none;#}
+{#            padding: 3px;#}
+{#            font-size: 15px;#}
+{#            cursor: pointer;#}
+{#        }#}
+{#        .delete:before {#}
+{#          content: "\2715";#}
+{#          font-size: 13px;#}
+{#          margin-right: 5px;#}
+{#        }#}
+{#        label{#}
+{#            font-weight: bold;#}
+{#        }#}
+{#        ol li{#}
+{#            margin: 10px;#}
+{#        }#}
+{#        table {#}
+{#            border-collapse: collapse;#}
+{#            width: 100%;#}
+{#        }#}
+{##}
+{#        th, td {#}
+{#            border: 1px solid black;#}
+{#            padding: 8px;#}
+{#        }#}
+{#        th {#}
+{#            background-color: #1a4b0f;#}
+{#            color:palegoldenrod;#}
+{#        }#}
+{#    </style>#}
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block window_icon %}
+    <link rel="icon" href="{% static 'asserts/logo lac-asbl JPEG.jpg' %}">
+{% endblock %}
+    <b>{% block title %}{{ currentSession.nom | upper}} {{ currentSession.postnom | upper}} {{ currentSession.prenom | capfirst}}{% endblock %}</b>
+{% block date %}
+    {{ date.date }}
+{% endblock %}
+{% block user_info %}
+    <span><b>{{ currentSession.nom | upper}} {{ currentSession.postnom | upper}}
+        {% if currentSession.prenom %}
+            {{ currentSession.prenom | capfirst}}
+        {% endif %}
+        </b>
+    </span>
+    <span style="font-size: 8.7pt;color: rgba(0,0,0,.4)">
+        {{ currentSession.antenne }}
+    </span>
+    <span style="font-size: 8.7pt;color: rgba(0,0,0,.4)">
+        {{ currentSession.departement }}
+    </span>
+    <span style="font-size: 8.7pt;color: rgba(0,0,0,.4)">
+        <u style="font-size: 9pt">{{ currentSession.fonction }}</u>
+    </span>
+{% endblock %}
+{% block profil %}
+    <h1>{{ currentSession.nom | upper }} {{ currentSession.postnom | upper }}
+        {% if currentSession.prenom %}
+            {{ currentSession.prenom | capfirst}}
+        {% endif %}
+    </h1>
+    <li>
+        <a href="{% url 'mon_profil_agent' currentSession.id %}">Réglages</a>
+    </li>
+    <li id="deconnexion">
+        <a href=" {% url 'module_deconnexion' %}">Deconnexion</a>
+    </li>
+{% endblock %}
+
+{% block fonctionalite %}
+    <h1>OPTIONS D'ADMINISTRATION</h1><br>
+    <a href="{% url 'admindashboard' %}">
+        <li>
+            Gestion des agents
+        </li>
+    </a>
+     <a href="{% url 'note_service' %}">
+        <li>
+            Notes de service
+        </li>
+    </a>
+    <a href="{% url 'ajouter_echo_de_bureau' %}">
+        <li>
+            Echo de nos bureaux
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Rapports et statistiques
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Droits et permissions
+        </li>
+    </a>
+    <br><br><h1>PROFILE DE L'AGENT</h1>
+    <a href="#">
+        <li>
+            Mon dossier administratif
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Mon agenda
+        </li>
+    </a>
+    <br><br><h1>BUREAU DE L’AGENT</h1>
+    <a href="{% url 'doc_projet' %}">
+        <li>
+            Outils généraux LACasbl
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Mes outils standards de service
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Mes outils personnels
+        </li>
+    </a>
+    <br><br><h1>VALVE DE L’AGENT</h1>
+    <a href="#">
+        <li>
+            Notes de service
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Bulletin d’information hebdomadaire
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Rapports d’activités/d’évaluation de besoins
+        </li>
+    </a>
+{% endblock %}
+
+{% block aside %}
+    <section class= "section" id="agents">
+        <a href="{% url 'ajout_agent' %}" id="btn_ajout">Ajouter un agent</a>
+        <table>
+            <tr>
+                <th>Nom</th>
+                <th>Postnom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Nom d'utilisateur</th>
+                <th>Antenne</th>
+                <th>Département</th>
+                <th>Fonction</th>
+                <th>Téléphone</th>
+                <th>Action</th>
+            </tr>
+            {% for user in liste_agents %}
+                {% if user.id != currentSession.id %}
+                        <tr class="row-of-data">
+                            <td>{{ user.nom | upper}}</td>
+                            <td>{{ user.postnom | upper}}</td>
+                            {% if user.prenom != 'None' %}
+                                <td>{{ user.prenom | capfirst}}</td>
+                            {% endif %}
+                            <td>{{ user.email }}</td>
+                            <td><b style="color: #0D7723">@{{ user.nom_utilisateur }}</b></td>
+                            <td>{{ user.antenne }}</td>
+                            <td>{{ user.departement | capfirst}}</td>
+                            <td>{{ user.fonction }}</td>
+
+                            <td>
+                                {{ user.tel1 }}
+                                {% if user.tel2 %}
+                                    / {{ user.tel2 }}
+                                {% endif %}
+
+                            </td>
+                            <td>
+                                <div class="div-in-table">
+                                    <a href="{% url 'mon_profil_agent' user.id %}" id="btn_details" title="Details">D</a>
+                                    <a href="{% url 'profil_agent' user.id %}" id="btn_modifier" title="Modifier">M</a>
+                                    <form method="POST" action="{% url 'demande_de_confirmation' user.id %}">
+                                        {% csrf_token %}
+                                        <input type="submit" value="X" id="btn_supprimer" title="Supprimer">
+                                    </form>
+                                </div>
+
+                            </td>
+                        </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </section>
+    <section class= "section" id="noteservice">
+        <a href="{% url 'note_service' %}" id="btn_ajout">Ajouter une note</a>
+        <table>
+            <tr>
+                <th>Objet de la note</th>
+                <th>Description de la note</th>
+                <th>date d'emission</th>
+                <th>Action</th>
+            </tr>
+            {% for note in liste_notes %}
+                <tr>
+                    <td>{{ note.titre }}</td>
+                    <td>{{ note.message }}</td>
+                    <td>{{ note.date.date }}</td>
+                    <td>
+                        <div class="div-in-table">
+                            <a href="{% url 'modif_note_service' note.id %}" id="btn_modifier" title="Modifier">M</a>
+                            <form method="POST" action='{% url 'confirmation_note_de_service' note.id %}'>
+                                {% csrf_token %}
+                                <input type="submit" value="X" id="btn_supprimer" title="Supprimer">
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </section>
+    <section class= "section" id="rapportstat">
+
+    </section>
+    <section class= "section" id="droitspermissions">
+
+    </section>
+    <section class= "section" id="echodebureaux">
+        <div style="display:inline-flex">
+            <div>
+                {% for echo in liste_echo %}
+                    <img src="../..{{ echo.photo.url }}" style="width: 70%">
+                    <a href="#">
+                        <h1>{{ echo.titre }}</h1>
+                        <p>{{ echo.description|truncatewords:13 }}</p>
+                    </a>
+                    <p>Publié il y a {{ echo.date|timesince }}</p>
+                {% endfor %}
+            </div>
+            <div>
+                {% for echo in liste_echo %}
+                    <a href="">
+                        <li>
+                            {{ echo.titre }}
+                        </li>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <section class= "section" id="agenda">
+        <a href="{% url 'ajouter_agenda' %}" id="btn_ajout">Etablir un agenda</a>
+           <table>
+               <tr>
+                   <th>Date</th>
+                   <th>Activités Prevues</th>
+                   <th>Lieu</th>
+                   <th>Heure</th>
+                   <th>Action</th>
+               </tr>
+               {% for programme in agenda %}
+                   <tr>
+                       <td>{{ programme.date }}</td>
+                       <td>{{ programme.activitePrevue }}</td>
+                       <td>{{ programme.lieu }}</td>
+                       <td>{{ programme.heure }}</td>
+                       <td>
+                           <div class="div-in-table">
+                               <a href="{% url 'mod_modifier_agenda' programme.id %}" id="btn_modifier" title="Modifier">M</a>
+                               <form method="POST" action='{% url 'mod_sup_agenda' programme.id %}'>
+                                   {% csrf_token %}
+                                   <input type="submit" value="X" id="btn_supprimer" title="Supprimer">
+                               </form>
+                           </div>
+                       </td>
+                   </tr>
+               {% endfor %}
+           </table>
+    </section>
+    <div id="conf">
+
+    </div>
+{% endblock %}

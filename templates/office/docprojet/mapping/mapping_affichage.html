@@ -1,0 +1,198 @@
+
+{% extends 'base_dashboard_agent.html' %}
+{% load static %}
+{% block title %}{{ titre }} {{ user.prenom |capfirst }} {{ user.nom |upper}} {{ user.postnom | upper}}{% endblock %}
+{% block user-name %}
+    <div id="detail-agent" class="align-items-center">
+        <p class="p-0 mb-0 text-center">{{ user.prenom | capfirst }} {{ user.nom |upper }} {{ user.postnom | upper }}</p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Antenne : <strong>{{ user.antenne }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Département : <strong>{{ user.departement }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Fonction : <strong>{{ user.fonction }}</strong></p>
+    </div>
+{% endblock %}
+{% block user_profil %}
+    {% if user.photo %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/{{ user.photo }}');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% else %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/photos/no.png');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block compte_btn_groupe %}
+        <div class="text-center w-100 d-md-flex flex-row">
+            <a type="button" href="{% url 'profil_agent' user.id %}" class="btn btn-sm btn-primary">
+                <span class="bi-pen"> Mon compte</span>
+            </a>
+            <a type="button" class="btn btn-sm  mx-3 btn-danger small" href="{% url 'module_deconnexion' %}"><span class="bi-lock"> Desconnecter</span></a>
+        </div>
+  </div>
+{% endblock %}
+{% block section_title %}
+    {% if messages %}
+        <div id="msg-toast" class="text-center fw-bold mb-2">
+            <div class="toast fade show w-100" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <strong class="me-auto bi-envelope h4"></strong>
+                <small class="text-muted">{{ date.today }}</small>
+{#                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>#}
+              </div>
+              <div class="toast-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <p class="text-danger h5">
+                                {{ message }}
+                                <strong></strong>
+                            </p>
+                        {% endif %}
+                        {% if message.tags == 'success' %}
+                            <p class="text-success h5">{{ message }}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+              </div>
+        </div>
+    </div>
+    {% endif %}
+    <span class="text-primary bi-newspaper">
+        Documents mapping
+    </span>
+{% endblock %}
+{% block central_section %}
+    <div class="w-100">
+        <form method="post" action="{% url 'doc_projet' %}">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+              <span class="input-group-text bi-search" id="basic-addon1"> </span>
+              <input type="text" class="form-control form-control-sm" placeholder="Titre ou code du projet à retrouver" aria-label="Username" aria-describedby="basic-addon1">
+                <button type="submit" class="btn-sm btn btn-primary">
+                    Rechercher
+                </button>
+            </div>
+        </form>
+    </div>
+{#    <div>#}
+{#        <a style="font-size: 11pt" href="{% url 'nouveau_mapping' %}" type="button" class="w-100 btn btn-sm btn-primary text-light">#}
+{#            <span style="font-size: 10pt" class="bi-plus-circle"> Nouveau document mapping</span>#}
+{#        </a>#}
+{#    </div>#}
+        <div>
+            <header class="w-100 d-flex flex-column">
+                <div class="border-bottom"><span class="bi-newspaper text-muted"> Titre du programme : </span> <strong>  {{ projet.titre }}</strong></div>
+                <div class="border-bottom"><span class="bi-code text-muted"> Code du programme  : </span> <strong>  {{ projet.code_project }}</strong></div>
+                <div class="border-bottom"><span class="bi-coin text-muted"> Programme financé par  : </span> <strong>  {{ projet.finance_par }}</strong></div>
+                <div class="border-bottom"><span class="bi-alarm text-muted"> Période d'exécution : </span> <strong>du  {{ projet.date_debut }} au {{ projet.date_fin }} soit {{ projet.duree }}</strong>
+                <strong class="small fw-normal p-1 text-primary text-light"> {{ projet.duree }}</strong>
+                </div>
+                <div class="border-bottom"><span class="bi-list-columns text-muted"> Plan d'actions LACasbl de développement (PAPLD):</span>
+                    <div style="text-align: justify">
+                        {{ projet.plan_action }}
+                    </div>
+                </div>
+                <div class="border-bottom">
+                    <span class="bi-person-rolodex text-muted"> Programme sollicité : </span> <strong>  {{ projet.programme_solicite }}</strong>
+                </div>
+            </header>
+        </div>
+    <div class="table-responsive mt-3">
+        <a type="button" href="{% url 'nouveau_mapping' projet.id %}" class="btn btn-sm w-100 btn-outline-primary">
+            <span class="bi-plus-circle"> Ajouter une nouvelle ligne</span>
+        </a>
+            <table class="table table-bordered table-striped table-sm">
+                  <thead class="align-items-center">
+                    <tr class="bg-dark text-light small table" style="font-size: 8pt;">
+                        <th scope="col">N°</th>
+                        <th scope="col">Personnel</th>
+                        <th scope="col">GRADES AGENT</th>
+                        <th scope="col">EFFECTIF RECHERCHE</th>
+                        <th scope="col">AFFECTATION</th>
+                        <th scope="col">NOMBRE DE JOUS DE TRAVAIL</th>
+                        <th scope="col">RESPONSABLES HERARCHIQUE</th>
+                        <th scope="col">PERSONNEL SUPERVISES DIRECTEMENT ET/OU INDIRECTEMENT</th>
+                        <th scope="col">RESPONSABILITES CLES DU PERSONNEL</th>
+                        <th scope="col">DESCRIPTION DE TACHES DANS LE PRGRAMME</th>
+                        <th scope="col">PROFIL DE CE POSTE/CONDITIONS A REMPLIR</th>
+					    <th scope="col">TYPE DE RECRUTEMENT (INTERNE/EXTERNE/MIXT)</th>
+                        <th scope="col">DEBUT</th>
+                        <th scope="col">FIN	TYPE DE CONTRATS A  DONNER AU STAFF</th>
+                        <th scope="col">NATURE DE CONTRAT</th>
+                        <th scope="col">ID AGENT</th>
+                        <th scope="col">DATE DEBUT CONTRAT</th>
+                        <th scope="col">DATE FIN CONTRATS</th>
+                        <th scope="col">DATE FIN ESSAIS</th>
+                        <th scope="col">DATE 1ere EVALUATION DE PERFORMENCE</th>
+                        <th scope="col">TOTAL SALAIRE  BRUTE PREVU</th>
+                        <th scope="col">LIGNE BUDGETAIRE A IMPUTER</th>
+                        <th scope="col">RETENUES  IMPOT DGI</th>
+                        <th scope="col">RETENUES  COTISATION CNSS</th>
+                        <th scope="col">RETENUES  NPP</th>
+                        <th scope="col">RETENUES  CAISSE SOCIALE AGENTS LACasbl</th>
+                        <th scope="col">NET A PAYER</th>
+                        <th scope="col">EQUIPEMENT</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for map in mapping %}
+                        {% if map.projet == projet %}
+
+                                <tr>
+                                    <td class="p-1 ">
+                                        <div>{{ forloop.counter }}</div>
+                                        <a type="button" class="nav-link" href="{% url 'modifier_lign_mapping' map.id %}"><span class="bi-hand-index"></span></a>
+                                    </td>
+                                    <td class="small">{{ map.personnel }}</td>
+                                    <td class="small">{{ map.grade_agent }}</td>
+                                    <td class="small">{{ map.effectif_recherche }}</td>
+                                    <td class="small">{{ map.affectation }}</td>
+                                    <td class="small">{{ map.nombre_de_jours }} jour(s) </td>
+                                    <td class="small">{{ map.reponsables_h }} </td>
+                                    <td class="small">{{ map.personnel_supervise }} </td>
+                                    <td class="small">{{ map.responsable_cle }} </td>
+                                    <td class="small">{{ map.description_taches }} </td>
+                                    <td class="small">{{ map.profil_de_ce_poste }} </td>
+                                    <td class="small">{{ map.type_de_recrutement }} </td>
+                                    <td class="small">{{ map.debut_recrutement }} </td>
+                                    <td class="small">{{ map.fin_recrutement }} </td>
+                                    <td class="small">{{ map.type_contrat }} </td>
+                                    <td class="small">{{ map.id_agent }} </td>
+                                    <td class="small">{{ map.date_debut_contrat }} </td>
+                                    <td class="small">{{ map.date_de_fin_contrat }} </td>
+                                    <td class="small">{{ map.date_de_fin_essai }} </td>
+                                    <td class="small">{{ map.date_premiere_evaluation }} </td>
+                                    <td class="small">{{ map.total_salaire }} </td>
+                                    <td class="small">{{ map.ligne_budgetaire }} </td>
+                                    <td class="small">{{ map.impot_DGI }} </td>
+                                    <td class="small">{{ map.retune_CNSS }} </td>
+                                    <td class="small">{{ map.retune_NPP }} </td>
+                                    <td class="small">{{ map.retune_CaisseSociale }} </td>
+                                    <td class="small">{{ map.net_a_payer }} </td>
+                                    <td class="small">{{ map.equipement }} </td>
+
+                                </tr>
+
+                        {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+{#        {% else %}#}
+{#            <div class="w-100 text-end ">#}
+{#                <div style="max-width: 50%;">#}
+{#                    <p class="text-danger h6 info_splash"><span class="bi-info-circle-fill "></span> Aucune ligne dans le documment mapping de ce projet</p>#}
+{#                </div>#}
+{#            </div>#}
+    </div>
+
+{% endblock %}

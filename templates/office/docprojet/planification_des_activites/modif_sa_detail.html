@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier l'état de besoin</title>
+</head>
+<body>
+    <h3>Modifier l'état de besoin</h3>
+    <form method="post" action="{% url 'mod_modifier_sa_detail' sa_detail.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Enregistrer">
+    </form>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendor/lacStyle.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendor/dashboard.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <title>Modifier le document projet</title>
+</head>
+<body>
+<div class="container-fluid" style="margin-top: 10px">
+    <h4 style="background-color: dodgerblue; color: white; padding: 4px; text-align: center; border-radius: 9px">EDITER LES INFORMATIONS GENERALES DU PROJET</h4>
+    <form method="POST" action="{% url 'mod_modifier_doc_projet' projet.id %}" style="display: flex;flex-direction: column">
+        {% csrf_token %}
+        {{ form.as_table }}
+        <input type="submit" class="submit" value="enregistrer">
+    </form>
+</div>
+<style>
+    .submit{
+        background-color: #1078d9;
+        padding: 5px;
+        color: white;
+        margin: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    label{
+        color: #1078d9;
+    }
+</style>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

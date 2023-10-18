@@ -1,0 +1,94 @@
+{% extends 'base_dashboard_agent.html' %}
+{% load static %}
+{% block title %}{{ titre }} {{ user.prenom |capfirst }} {{ user.nom |upper}} {{ user.postnom | upper}}{% endblock %}
+{% block user-name %}
+    <div id="detail-agent" class="align-items-center">
+        <p class="p-0 mb-0 text-center">{{ user.prenom | capfirst }} {{ user.nom |upper }} {{ user.postnom | upper }}</p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Antenne : <strong>{{ user.antenne }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Département : <strong>{{ user.departement }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Fonction : <strong>{{ user.fonction }}</strong></p>
+    </div>
+{% endblock %}
+{% block user_profil %}
+    {% if user.photo %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/{{ user.photo }}');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% else %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/photos/no.png');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block compte_btn_groupe %}
+        <div class="text-center w-100 d-md-flex flex-row">
+            <a type="button" href="{% url 'profil_agent' user.id %}" class="btn btn-sm btn-primary">
+                <span class="bi-pen"> Mon compte</span>
+            </a>
+            <a type="button" class="btn btn-sm  mx-3 btn-danger small" href="{% url 'module_deconnexion' %}"><span class="bi-lock"> Desconnecter</span></a>
+        </div>
+
+  </div>
+{% endblock %}
+{% block section_title %}<span class="text-primary bi-currency-dollar">Editer le budget de cette activité</span>{% endblock %}
+{% block central_section %}
+    <h3>Modifier le budget</h3>
+    <div id="div_message" class="container-fluid" style="display: none"><span style="color: red"><b>le montant des contributions des partenaires doit être égal au cout total</b></span></div>
+    <div style="padding: 10px">
+        <form method="post" action="{% url 'mod_modifier_budget' budget.id %}" style="display: flex;
+            flex-direction: column">
+                {% csrf_token %}
+                {{ form.as_table }}
+                {% for p_c in partenaire_contrib %}
+                    <label>{{ p_c.0 }}</label>
+                    <input type="number" value="{{ p_c.1 }}" name="partenaire_{{ p_c.0 }}" class="contrib" onchange="calculerSomme_contrib()">
+                {% endfor %}
+                <br><input type="submit" value="Enregistrer" id="id_btn_insert">
+            </form>
+    </div>
+    <script>
+        function calculerSomme_contrib() {
+            var inputs = document.querySelectorAll(".contrib");
+            var somme_contrib = 0;
+            for (var i = 0; i < inputs.length; i++) {
+                somme_contrib += parseFloat(inputs[i].value);
+            }
+            var resultat = 0;
+            var input1 = parseFloat(document.getElementById("id_quantite").value);
+            var input2 = parseFloat(document.getElementById("id_prixUnit").value);
+            var input3 = parseFloat(document.getElementById("id_frequence").value);
+            resultat = input1 * input2 * input3;
+            var btninsert = document.getElementById("id_btn_insert");
+            if (resultat == somme_contrib){
+                $('#id_btn_insert').css("background-color", "#1078d9");
+                $('#div_message').css("display", "none");
+                btninsert.disabled = false;
+            }else{
+                $('#id_btn_insert').css("background-color", "darkgrey");
+                $('#div_message').css("display", "unset");
+                btninsert.disabled = true;
+            }
+        }
+        var inputquantite = document.getElementById('id_quantite');
+        inputquantite.addEventListener("change", calculerSomme_contrib);
+        var inputfrequence = document.getElementById('id_frequence');
+        inputfrequence.addEventListener("change", calculerSomme_contrib);
+        var inputprixunit = document.getElementById('id_prixUnit');
+        inputprixunit.addEventListener("change", calculerSomme_contrib);
+    </script>
+    <style>
+        #id_partenaire{
+            display: none;
+        }
+    </style>
+{% endblock %}

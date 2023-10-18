@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier le plan detaille</title>
+</head>
+<body>
+    <h3>Modification du plan detaille</h3>
+    <form method="post" action="{% url 'mod_modifier_plan' plan.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <input type="submit" value="Enregistrer">
+    </form>
+    <style>
+        #id_projet, #id_activiteprincipal, #id_indicateur{
+            display: none;
+        }
+    </style>
+</body>
+</html>

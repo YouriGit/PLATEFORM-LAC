@@ -1,0 +1,99 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale = 1">
+{% block css %}
+    <link rel="stylesheet" href="{% static 'office/dashboard_css.css' %}">
+{% endblock %}
+
+{% block window_icon %}
+
+{% endblock %}
+{% block script %}
+{% endblock %}
+<script type="text/javascript" src="{%  static 'office/jquery-3.4.1.js' %}"></script>
+<script type="text/javascript" src ="{% static  'office/dashboard-header.js' %}"></script>
+<title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+	<div id="user_menu">
+        {% block profil %}
+            <li>
+			<a href="#">Reglages</a>
+		    </li>
+		    <li id="deconnexion">
+		    	<a href="#">Deconnexion</a>
+		    </li>
+        {% endblock %}
+	</div>
+	<main>
+		<header>
+			<div id="lac_info">
+                <a href="{% url 'admindashboard' %}">
+                    <img alt src="{% static 'asserts/logo lac-asbl JPEG.jpg' %}">
+
+				    <div id="date">
+					    <div id="company">LIGUE ANTI - CHOMAGE</div>
+                        {% block date %}
+                            <div class="time">Bukavu {{ date.date }}</div>
+                            <div class="time">14:38</div>
+                        {% endblock %}
+
+				    </div>
+                </a>
+			</div>
+			<div id="user_infos">
+{#				<img id="user_profil_pic" alt src="{% static 'asserts/user.png' %}">#}
+                <div id="photo_de_profil" style="width: 60px;
+	                        height: 50px;
+
+                            margin-right: 4px;
+                                ">
+
+                </div>
+                <script>
+                    window.addEventListener('load',$e=>{
+                        image = document.getElementById('lac_info')
+                        image.setstyle = "display:none"
+                    })
+                </script>
+				<div id="details">
+                    {% block user_info %}
+
+                    {% endblock %}
+				</div>
+				<div id="arrow-profil">
+					<img style="width: 30px; 
+								height: 30px;
+								cursor: pointer;
+								" src="{% static 'asserts/arrow.png' %}" alt id="arrow_image">
+				</div>
+			</div>
+		</header>
+
+		<section id="main-section">
+            <nav>
+                <div id="fonctionnalite">
+                    {% block fonctionalite %}
+
+                    {% endblock %}
+                </div>
+		    </nav>
+            <aside>
+                {% block aside %}
+
+                {% endblock %}
+            </aside>
+
+		</section>
+</main>
+<div id="messages">
+    {% block message %}
+
+    {% endblock %}
+</div>
+</body>
+
+</html>

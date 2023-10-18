@@ -1,0 +1,142 @@
+
+{% extends 'base_dashboard_agent.html' %}
+{% load static %}
+{% block title %}{{ titre }} {{ user.prenom |capfirst }} {{ user.nom |upper}} {{ user.postnom | upper}}{% endblock %}
+{% block user-name %}
+    <div id="detail-agent" class="align-items-center">
+        <p class="p-0 mb-0 text-center">{{ user.prenom | capfirst }} {{ user.nom |upper }} {{ user.postnom | upper }}</p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Antenne : <strong>{{ user.antenne }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Département : <strong>{{ user.departement }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Fonction : <strong>{{ user.fonction }}</strong></p>
+    </div>
+{% endblock %}
+{% block user_profil %}
+    {% if user.photo %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/{{ user.photo }}');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% else %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/photos/no.png');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block compte_btn_groupe %}
+        <div class="text-center w-100 d-md-flex flex-row">
+            <a type="button" href="{% url 'profil_agent' user.id %}" class="btn btn-sm btn-primary">
+                <span class="bi-pen"> Mon compte</span>
+            </a>
+            <a type="button" class="btn btn-sm  mx-3 btn-danger small" href="{% url 'module_deconnexion' %}"><span class="bi-lock"> Desconnecter</span></a>
+        </div>
+  </div>
+{% endblock %}
+{% block section_title %}
+    {% if messages %}
+        <div id="msg-toast" class="text-center fw-bold mb-2">
+            <div class="toast fade show w-100" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <strong class="me-auto bi-envelope h4"></strong>
+                <small class="text-muted">{{ date.today }}</small>
+{#                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>#}
+              </div>
+              <div class="toast-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <p class="text-danger h5">
+                                {{ message }}
+                                <strong></strong>
+                            </p>
+                        {% endif %}
+                        {% if message.tags == 'success' %}
+                            <p class="text-success h5">{{ message }}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+              </div>
+        </div>
+    </div>
+    {% endif %}
+    <span class="text-primary bi-newspaper">
+        Ajouter un document mapping
+    </span>
+{% endblock %}
+{% block central_section %}
+    <div class="accordion mt-1 mb-3" id="acpro">
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="headingTwo_beta">
+              <button class="accordion-button btn-sm collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwoh" aria-expanded="false" aria-controls="collapseTwo">
+                  <span>Projet : <strong>{{ projet.titre }}</strong></span>
+              </button>
+            </h4>
+            <div id="collapseTwoh" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                    <header class="w-100 d-flex flex-column">
+                    <div class="border-bottom"><span class="bi-newspaper text-muted"> Titre du programme : </span> <strong>  {{ projet.titre }}</strong></div>
+                    <div class="border-bottom"><span class="bi-code text-muted"> Code du programme  : </span> <strong>  {{ projet.code_project }}</strong></div>
+                    <div class="border-bottom"><span class="bi-coin text-muted"> Programme financé par  : </span> <strong>  {{ projet.finance_par }}</strong></div>
+                    <div class="border-bottom"><span class="bi-alarm text-muted"> Période d'exécution : </span> <strong>du  {{ projet.date_debut }} au {{ projet.date_fin }} soit {{ projet.duree }}</strong>
+                    <strong class="small fw-normal p-1 text-primary text-light"> {{ projet.duree }}</strong>
+                    </div>
+                    <div class="border-bottom"><span class="bi-list-columns text-muted"> Plan d'actions LACasbl de développement (PAPLD):</span>
+                        <div style="text-align: justify">
+                            {{ projet.plan_action }}
+                        </div>
+                    </div>
+                    <div class="border-bottom">
+                        <span class="bi-person-rolodex text-muted"> Programme sollicité : </span> <strong>  {{ projet.programme_solicite }}</strong>
+                    </div>
+                </header>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="w-100 mb-5">
+    <div class="mb-3">
+        <button type="button" data-bs-toggle="modal" data-bs-target='#modal' class="w-100 btn btn-sm btn-danger">
+            <span class="bi-trash"> Supprimer cette ligne</span>
+        </button>
+        <div class="modal fade" id='modal'>
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title h5 text-center " id="exampleModalCenteredScrollableTitle">
+                        Demande de confirmation
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="w-100 fw-normal" style="font-size: 18pt">
+                          Voulez-vous supprimer cette ligne dans le document mapping ?
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                    <a type="button" href="{% url 'mod_effacer_mapping' map.id %}" class="btn btn-primary btn-sm">Oui je le veut</a>
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Fermer</button>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{#    <button type="button" class="w-100 btn btn-sm btn-danger">#}
+{#        <span class="bi-trash"> Supprimer cette ligne</span>#}
+{#    </button>#}
+        <form class="d-flex flex-column" method="post" action="{% url 'mod_modifier_mapping' map.id %}">
+            {% csrf_token %}
+            {{ form.as_table }}
+            <button type="submit" class="btn btn-sm btn-primary mt-4">
+                <span class="bi-save"> Mettre à jour</span>
+            </button>
+        </form>
+    </div>
+{% endblock %}

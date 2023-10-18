@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifications</title>
+</head>
+<body>
+    <h3>{{ baniere }}</h3>
+    <form method="post" style="display: flex;flex-direction: column" action="{% url 'mod_modifier_og' objectif_global.id idprojet %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Executer">
+    </form>
+</body>
+</html>

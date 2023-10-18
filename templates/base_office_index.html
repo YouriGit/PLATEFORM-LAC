@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+      {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Ir. Calvin AWA MUSAFIRI & Ir. Eric BITANGALO MUKUTA & Odedi MULUMEODERWA SAFARI">
+    <link rel="icon" href="{% static 'asserts/logo lac-asbl JPEG.jpg' %}">
+      <!-- Recharger les fichiers CSS pour BOOTSTRAP -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-icons/bootstrap-icons.css' %}">
+      <!-- CSS pour mon vendor -->
+      <link rel="stylesheet" type="text/css" href="{% static 'css/vendor/lacStyle.css' %}">
+      <!-- Recharger les fichiers JS pour jQuery -->
+      <script src="{% static 'js/jquery.js' %}"></script>
+      <title>
+          {% block title %} {% endblock %}
+      </title>
+  </head>
+  <body>
+        <header class="container">
+            <div class="center text-md-center border-bottom row align-items-center justify-content-around">
+                <a href="/" class="col-md-3 col-sm-11 text-sm-center text-center">
+                    <img class="col-auto" src="{% static 'asserts/logo lac-asbl PNG.png' %}">
+                </a>
+                <div class="col-md-7 col-sm-11 text-md-start text-sm-center text-center small">
+                    <h4 class="mb-md-2">LIGUE ANTI-CHOMAGE</h4>
+                    <small style="text-align: justify">
+                        La ligue anti-chomage est une association sans but lucratif
+                        oeuvrant en Republique Democratique du Congo (RDC), elle est
+                        une association chretienne qui a pour but de lutter contre
+                        la pauvrete au seins de la societe
+                    </small>
+                </div>
+            </div>
+
+
+        </header>
+        <section class="container">
+            {% block section %}
+
+            {% endblock %}
+        </section>
+        <footer class="container mt-5">
+            <div class="border-top">
+                <div class="col-md-auto text-md-center text-1 justify-content-between">
+                    <a href="#" class="nav-item text-decoration-none bi-facebook m-md-3"> Consulter notre page facebook</a>
+                    <a href="#" class="text-success nav-item text-decoration-none bi-whatsapp"> Nous contacer via whatsapp</a>
+
+                </div>
+                <div style="text-align: justify" class="small text-md-center p-2">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,138 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block window_icon %}
+    <link rel="icon" href="{% static 'asserts/logo lac-asbl JPEG.jpg' %}">
+{% endblock %}
+    <b>{% block title %}{{ currentSession.nom | upper}} {{ currentSession.postnom | upper}} {{ currentSession.prenom | capfirst}}{% endblock %}</b>
+{% block date %}
+    {{ date.date }}
+{% endblock %}
+{% block profil %}
+    <h1>{{ currentSession.nom | upper }} {{ currentSession.postnom | upper }}
+        {% if currentSession.prenom %}
+            {{ currentSession.prenom | capfirst}}
+        {% endif %}
+    </h1>
+    <li>
+        <a href="{% url 'mon_profil_agent' currentSession.id %}">Réglages</a>
+    </li>
+    <li id="deconnexion">
+        <a href=" {% url 'module_deconnexion' %}">Deconnexion</a>
+    </li>
+{% endblock %}
+{% block user_info %}
+    <span><b>{{ currentSession.nom | upper}} {{ currentSession.postnom | upper}}
+        {% if currentSession.prenom %}
+            {{ currentSession.prenom | capfirst}}
+        {% endif %}
+        </b>
+    </span>
+    <span style="font-size: 8.7pt;color: rgba(0,0,0,.4)">
+        {{ currentSession.antenne }}
+    </span>
+    <span style="font-size: 8.7pt;color: rgba(0,0,0,.4)">
+        {{ currentSession.departement }}
+    </span>
+    <span style="font-size: 8.7pt;color: rgba(0,0,0,.4)">
+        <u style="font-size: 9pt">{{ currentSession.fonction }}</u>
+    </span>
+{% endblock %}
+{% block fonctionalite %}
+    <h1>OPTIONS D'ADMINISTRATION</h1>
+    <a href="{% url 'admindashboard' %}">
+        <li>
+            Gestion des agents
+        </li>
+    </a>
+     <a href="{% url 'note_service' %}">
+        <li>
+            Notes de service
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Rapports et statistiques
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Droits et permissions
+        </li>
+    </a>
+    <br><br><h1>PROFILE DE L'AGENT</h1>
+    <a href="#">
+        <li>
+            Mon dossier administratif
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Mon agenda
+        </li>
+    </a>
+    <br><br><h1>BUREAU DE L’AGENT</h1>
+    <a href="#">
+        <li>
+            Outils généraux LACasbl
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Mes outils standards de service
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Mes outils personnels
+        </li>
+    </a>
+    <br><br><h1>VALVE DE L’AGENT</h1>
+    <a href="#">
+        <li>
+            Notes de service
+        </li>
+    </a>
+     <a href="#">
+        <li>
+            Bulletin d’information hebdomadaire
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Rapports d’activités/d’évaluation de besoins
+        </li>
+    </a>
+    <a href="#">
+        <li>
+            Echo de nos bureaux LACasbl
+        </li>
+    </a>
+{% endblock %}
+{% block aside %}
+    <h1>Voulez-vous supprimer cette note de service ? </h1>
+    <div id="question">
+        <a style="text-decoration: none;color: unset; background-color: #0D7723;color: white;
+            padding: 10px;border-radius: 5px" href="{% url 'effacer_une_note' note_a_supprimer.id %}">
+            OUI
+        </a>
+        <a style="text-decoration: none;color: unset; background-color: #D73F3C;color: white;
+            padding: 10px;border-radius: 5px"href="{% url 'admindashboard' %}">NON</a>
+    </div>
+    <div style="display: flex;flex-direction: column;padding: 10px;background-color: rgba(0,0,0,.09);border-radius: 10px">
+        <span>Nom : <b>{{ note_a_supprimer.nom | upper }}</b></span><br>
+        <span>Postnom : <b>{{ note_a_supprimer.postnom | upper }}</b></span><br>
+        {% if agent_a_supprimer.prenom %}
+            <span>Prenom : <b>{{ note_a_supprimer.prenom | capfirst }}</b></span><br>
+        {% endif %}
+    </div>
+<style>
+
+    #question {
+        width: 20%;
+        display: flex;
+        justify-content: space-around;
+    }
+</style>
+{% endblock %}
+

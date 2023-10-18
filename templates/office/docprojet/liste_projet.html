@@ -1,0 +1,132 @@
+
+{% extends 'base_dashboard_agent.html' %}
+{% load static %}
+{% block title %}{{ titre }} {{ user.prenom |capfirst }} {{ user.nom |upper}} {{ user.postnom | upper}}{% endblock %}
+{% block user-name %}
+    <div id="detail-agent" class="align-items-center">
+        <p class="p-0 mb-0 text-center">{{ user.prenom | capfirst }} {{ user.nom |upper }} {{ user.postnom | upper }}</p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Antenne : <strong>{{ user.antenne }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Département : <strong>{{ user.departement }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Fonction : <strong>{{ user.fonction }}</strong></p>
+    </div>
+{% endblock %}
+{% block user_profil %}
+    {% if user.photo %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/{{ user.photo }}');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% else %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/photos/no.png');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block compte_btn_groupe %}
+        <div class="text-center w-100 d-md-flex flex-row">
+            <a type="button" href="{% url 'profil_agent' user.id %}" class="btn btn-sm btn-primary">
+                <span class="bi-pen"> Mon compte</span>
+            </a>
+            <a type="button" class="btn btn-sm  mx-3 btn-danger small" href="{% url 'module_deconnexion' %}"><span class="bi-lock"> Desconnecter</span></a>
+        </div>
+
+  </div>
+{% endblock %}
+{% block section_title %}
+    {% if messages %}
+        <div id="msg-toast" class="text-center fw-bold mb-2">
+            <div class="toast fade show w-100" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <strong class="me-auto bi-envelope h4"></strong>
+                <small class="text-muted">{{ date.today }}</small>
+{#                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>#}
+              </div>
+              <div class="toast-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <p class="text-danger h5">
+                                {{ message }}
+                                <strong></strong>
+                            </p>
+                        {% endif %}
+                        {% if message.tags == 'success' %}
+                            <p class="text-success h5">{{ message }}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+              </div>
+        </div>
+    </div>
+    {% endif %}
+    <span class="text-primary bi-newspaper">
+        Liste des documents projet
+    </span>
+{% endblock %}
+{% block central_section %}
+    <div class="w-100">
+        <form method="post" action="{% url 'doc_projet' %}">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+              <span class="input-group-text bi-search" id="basic-addon1"> </span>
+              <input type="text" class="form-control form-control-sm" placeholder="Titre ou code du projet à retrouver" aria-label="Username" aria-describedby="basic-addon1">
+                <button type="submit" class="btn-sm btn btn-primary">
+                    Rechercher
+                </button>
+            </div>
+        </form>
+    </div>
+    <div>
+        <a style="font-size: 11pt" href="{% url 'doc_projet' %}" type="button" class="w-100 btn btn-sm btn-primary text-light">
+            <span style="font-size: 10pt" class="bi-plus-circle"> Nouveau document projet</span>
+        </a>
+    </div>
+    <div>
+        <table class="table table-bordered table-striped table-responsive table-sm">
+          <thead class="align-items-center">
+            <tr class="bg-dark text-light small table">
+              <th scope="col">N°</th>
+              <th scope="col">Titre</th>
+              <th scope="col">Code</th>
+              <th scope="col">Durée</th>
+              <th scope="col">Financé par</th>
+              <th scope="col">Statut</th>
+              <th scope="col">Etat</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for projet in projets %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="small">{{ projet.titre }}</td>
+                    <td class="small text-muted fw-bold">{{ projet.code_project }}</td>
+                    <td class="small"> du {{ projet.date_debut }} au {{ projet.date_fin }}</td>
+                    <td class="fw-bold small text-info">{{ projet.finance_par }}</td>
+                    <td class="small text-black-50">
+                        {{ projet.statut }}
+                    </td>
+                    <td class="small">En cour...</td>
+                    <td class="small">
+                        <a href="{% url 'apercu_du_projet' projet.id %}" title="Configuration succinte du projet" type="button" ><span class="text-success bi-eye-fill"></span></a>
+                        <a href="{% url 'configuration_doc_projet' projet.id %}" title="Configuration succinte du projet" type="button" ><span class="text-primary bi-gear-fill"></span></a>
+                        <a href="{% url 'configuration_domaine_doc_projet' projet.id %}" title="Configuration du documment projet" type="button" ><span class="text-warning bi-newspaper"></span></a>
+                        <a href="{% url 'planification_detaillee' projet.id %}" title="Planification détaillée du projet" type="button" ><span class="text-black-50 bi-list-columns-reverse"></span></a>
+                        <a href="{% url 'budget' projet.id %}" title="Budget Global" type="button" ><span class="text-info bi-currency-dollar"></span></a>
+                    </td>
+                </tr>
+            {% endfor %}
+          </tbody>
+    </table>
+    </div>
+
+{% endblock %}

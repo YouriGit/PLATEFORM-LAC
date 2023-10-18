@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifications</title>
+</head>
+<body>
+    <h3>{{ baniere }}</h3>
+    <form method="post" style="display: flex;flex-direction: column" action="{% url 'mod_modifier_sa' sous_activite.id idprojet%}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Executer">
+    </form>
+<script src="{% static 'office/doc_projet_configuration.js' %}"></script>
+</body>
+</html>

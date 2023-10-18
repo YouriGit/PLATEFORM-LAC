@@ -1,0 +1,198 @@
+{% extends 'base_dashboard_agent.html' %}
+{% load static %}
+{% block title %}{{ titre }} {{ user.prenom |capfirst }} {{ user.nom |upper}} {{ user.postnom | upper}}{% endblock %}
+{% block user-name %}
+    <div id="detail-agent" class="align-items-center">
+        <p class="p-0 mb-0 text-center">{{ user.prenom | capfirst }} {{ user.nom |upper }} {{ user.postnom | upper }}</p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Antenne : <strong>{{ user.antenne }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Département : <strong>{{ user.departement }}</strong></p>
+        <p class="text-muted small text-center fw-normal m-0 p-0 border-bottom small-info">Fonction : <strong>{{ user.fonction }}</strong></p>
+    </div>
+{% endblock %}
+{% block user_profil %}
+    {% if user.photo %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/{{ user.photo }}');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% else %}
+        <div class="shadow" id="user-profil"
+             style="min-width: 50px; min-height: 50px;
+                     background-image: url('/media/photos/no.png');
+                     background-position: center;
+                     background-size: cover;
+                     border-radius: 7px;
+                     ">
+        </div>
+    {% endif %}
+{% endblock %}
+{% block compte_btn_groupe %}
+        <div class="text-center w-100 d-md-flex flex-row">
+            <a type="button" href="{% url 'profil_agent' user.id %}" class="btn btn-sm btn-primary">
+                <span class="bi-pen"> Mon compte</span>
+            </a>
+            <a type="button" class="btn btn-sm  mx-3 btn-danger small" href="{% url 'module_deconnexion' %}"><span class="bi-lock"> Desconnecter</span></a>
+        </div>
+
+  </div>
+{% endblock %}
+{% block section_title %}<span class="text-primary bi-gear-fill">Configuration des domaines du projet</span>{% endblock %}
+{% block central_section %}
+     <header class="w-100 d-flex flex-column">
+         <div class="border-bottom"><span class="bi-newspaper text-muted"> Titre du programme : </span> <strong>  {{ projet_en_cour.titre }}</strong></div>
+         <div class="border-bottom"><span class="bi-code text-muted"> Code du programme  : </span> <strong>  {{ projet_en_cour.code_project }}</strong></div>
+         <div class="border-bottom"><span class="bi-coin text-muted"> Programme financé par  : </span> <strong>  {{ projet_en_cour.finance_par }}</strong></div>
+         <div class="border-bottom"><span class="bi-alarm text-muted"> Période d'exécution : </span> <strong>du  {{ projet_en_cour.date_debut }} au {{ projet_en_cour.date_fin }} soit {{ projet_en_cour.duree }}</strong>
+             <strong class="small fw-normal p-1 text-primary text-light"> {{ projet_en_cour.duree }}</strong>
+         </div>
+         <div class="border-bottom"><span class="bi-list-columns text-muted"> Plan d'actions LACasbl de développement (PAPLD):</span>
+             <div style="text-align: justify">
+                 {{ projet_en_cour.plan_action }}
+             </div>
+         </div>
+         <div class="border-bottom">
+             <span class="bi-person-rolodex text-muted"> Programme sollicité : </span> <strong>  {{ projet_en_cour.programme_solicite }}</strong>
+         </div>
+     </header>
+    <div><h5 style="background-color: black; color: white; padding: 4px; text-align: center; border-radius: 9px">DOMAINES DES RESULTATS</h5></div>
+    <form method="post" action="{% url 'mod_ajouter_domaine_configuration' projet_en_cour.id %}" style="padding: 6px">
+        {% csrf_token %}
+        <div>
+            {{ form_domaine_projet.as_table }}
+            <br><button type="button" id="add_button_domaine" class="btn btn-sm w-100 btn-outline-primary">ajouter ce domaine</button>
+        </div>
+        <div id="project_container" style="padding: 0px" class="container-fluid">
+        </div>
+        <input type="submit" value="Enregistrer" style="margin-top: 5px" class="btn btn-sm w-100 btn-primary">
+    </form>
+    <style>
+        #form_sousactivite, #form_domaine, #form_obg, #form_detaildomaine, #form_obs, #form_ap, #form_volet{
+            background-color: #c4c4c4;
+        }
+        #project_container{
+            border: none;
+            border-radius: 9px;
+        }
+        .domaine_div{
+            border: 1px solid;
+            border-radius: 9px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 4px;
+        }
+        .label_domaine{
+            font-size: 14pt;
+            font-family: "Times New Roman";
+            color: dodgerblue;
+            border: none;
+        }
+        .label_volet{
+            color: white;
+            background-color: slategrey;
+            border: none;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            padding: 4px;
+        }
+        .labelvolet{
+            color: black;
+            font-size: 16px;
+        }
+        .volet_div{
+            margin-top: 4px;
+            margin-bottom: 1px;
+            border: 1px solid lightseagreen;
+            border-radius: 9px;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            padding: 0px;
+        }
+        label{
+            color: black;
+        }
+        .objlabeldomaine{
+            color: black;
+        }
+        #objlacdedomaine{
+            font-size: 12pt;
+            font-family: "Times New Roman";
+            margin-bottom: 7px;
+        }
+        .volet_detail{
+            margin-top: 5px;
+        }
+        #button_volet_domaine{
+            margin-top: 3px;
+            margin-bottom: 3px;
+        }
+        #button_risque_domaine{
+            margin-top: 3px;
+        }
+        .risquevolet{
+            margin-top: 2px;
+            width: 32%;
+            margin-left: 2px;
+        }
+        .labeldivgestion{
+            color: yellow;
+            font-size: 14pt;
+            background-color: black;
+            border-radius: 9px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .bouttonrisque{
+            margin-top: 2px;
+            width: 10%;
+        }
+        .divgestion{
+            display: flex;
+            flex-direction: column;
+            margin-top: 3px;
+            min-height: 60px;
+        }
+        .bouton_activite_ajouter{
+            margin-left: 30px;
+            margin-top: 5px;
+        }
+        .divactivite{
+            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+        }
+        .detail_activite{
+            margin-top: 4px;
+        }
+        .detail_activite_indic{
+            margin-top: 2px;
+            margin-left: 60px;
+        }
+        .div_periode{
+            margin-top: 2px;
+            padding: 1px;
+        }
+        .form_check{
+            color: dodgerblue;
+        }
+
+        td{
+            padding: 2px;
+            border: solid 1px;
+        }
+        table,thead{
+            padding: 2px;
+            margin: 2px;
+            border: solid 1px;
+        }
+    </style>
+    <script src="{% static 'office/jquery-3.4.1.js' %}"></script>
+    <script src="{% static 'office/js++/doc_projet.js' %}"></script>
+{% endblock %}

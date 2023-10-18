@@ -1,0 +1,159 @@
+@charset "utf-8";
+/* CSS Document */
+*{
+	font-family: arial;
+	font-size: 11pt;
+	margin: 0;
+	padding: 0;
+}
+@font-face{
+	font-family: "social";
+	/*src: url("asserts/socialmed.ttf");*/
+}
+header{
+	background-color: #e5e4de;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 8px;
+	border-top: solid 3.5px #48a733;
+}
+header img{
+	width: 190px;
+	height: auto;
+	margin-right: 13px;
+	border-radius: 10px;
+}
+
+header #company{
+	opacity: .7;
+	font-weight: bold;
+	font-size: 17pt;
+	color: #0D7723;
+	letter-spacing: -1pt;
+	cursor: pointer;
+}
+header .time{
+	font-size: 9pt;
+}
+
+header #date{
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	margin-left: 10px;
+	color: #606060;
+	
+}
+
+section #formulaire_connection{
+	margin-top: 8.8%;
+	margin-left: 50%;
+	background-color: rgba(0,0,0,.071);
+	transform: translateX(-50%);
+	align-items: center;
+	border-radius: 10px;
+	box-shadow: 10px 10px 40px rgba(0,0,0,.26);
+	width: 28%;
+	
+}
+section #formulaire_connection form{
+
+}
+section #formulaire_connection h1{
+	font-weight: normal;
+	font-size: 14pt;
+	text-align: center;
+	background-color: #9cc194;
+	padding: 7px;
+	border-top-left-radius:8px;
+	border-top-right-radius: 8px;
+	color: #ecf4ea;
+}
+
+section #formulaire_connection p{
+	display: flex;
+	flex-direction: column;
+	padding: 15px;
+}
+section #formulaire_connection p label{
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+.input_text{
+	padding: 5px;
+	font-size: 13pt;
+	border: none;
+	border-bottom: solid 1px rgba(0,0,0,.18);
+	height: 25px;
+	border-radius: 10px;
+	text-align: center;
+	
+/*	border-bottom: solid 1px rgba(0,0,0,.18);*/
+}
+.input_text::placeholder{
+	font-size: 12pt;
+}
+section #formulaire_connection a{
+	text-decoration: none;
+	color: #1078d9;
+	text-align: center;
+}
+section #formulaire_connection a div{
+	font-size: 9pt;
+}
+#submit{
+	margin-left: 50%;
+	transform: translateX(-50%);
+	width: 70%;
+	font-size: 12pt;
+	padding: 7px;
+	border: none;
+	background-color: #1078d9;
+	color: white;
+	cursor: pointer;
+	border-radius: 8px;
+}
+#submit:hover{
+	transition: .2s;
+	opacity: .67;
+}
+
+
+footer{	 
+	margin-top: 21.5vh;
+	background-color: #1a4b0f;
+	padding: 10px;
+	display: grid;
+	grid-template-columns: 10% 70% 10%;
+	align-items: center;
+}
+footer #footer_icon_social li{
+	font-family: "social";
+	font-size: 20pt;
+	list-style: none;
+	opacity: .3;
+	color: white;
+}
+footer #footer_icon_social li:hover{
+	transition: .4s;
+	opacity: 1;
+}
+footer #footer_icon_social{
+	display: flex;
+	justify-content: space-between;
+	cursor: pointer;
+
+}
+footer #right{
+	color: white;
+	text-align: center;
+	font-size: 20pt;
+}
+footer img{
+	width: 80%;
+	border: solid #C1C1C1 .4px;
+	padding: 1px;
+	border-radius: 5px;
+}

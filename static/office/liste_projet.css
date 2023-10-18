@@ -1,0 +1,31 @@
+@charset "utf-8";
+table{
+	display: flex;
+	margin-top: 15px;
+}
+table th{
+	text-align: left;
+	padding: 5px;
+	background-color: #c1c0c0;
+	color: #494949;
+}
+table td{
+	padding: 5px;
+	font-size: 10pt;
+	text-align: left;
+}
+table td div{
+	display: flex;
+	justify-content: space-between;
+
+}
+table tr td{
+	border-bottom: solid 2px #1a4b0f;
+}
+
+table th:first-child, table td:first-child {
+    width: 50px;
+}
+table td, table th {
+    word-wrap: break-word;
+}
